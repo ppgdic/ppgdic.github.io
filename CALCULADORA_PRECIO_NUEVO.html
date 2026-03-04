@@ -1,0 +1,1650 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Retail Pro — Suite Comercial</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS — DARK (default) ─────────────────── */
+:root {
+  --ink:    #0c0e12;
+  --ink2:   #13161c;
+  --ink3:   #1b1f28;
+  --ink4:   #242933;
+  --line:   #2a2f3c;
+  --line2:  #343b4a;
+  --fog:    #4a5268;
+  --mist:   #6b7491;
+  --silver: #9aa3ba;
+  --snow:   #e8ecf5;
+  --white:  #ffffff;
+
+  --lime:   #a3e635;
+  --lime2:  #84cc16;
+  --cyan:   #22d3ee;
+  --cyan2:  #06b6d4;
+  --amber:  #fbbf24;
+  --amber2: #f59e0b;
+  --rose:   #fb7185;
+  --rose2:  #f43f5e;
+  --violet: #c084fc;
+  --blue:   #60a5fa;
+
+  --mono: 'DM Mono', monospace;
+  --sans: 'Outfit', sans-serif;
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+
+/* ── TOKENS — LIGHT ──────────────────────────── */
+:root.light {
+  --ink:    #f0f2f7;
+  --ink2:   #ffffff;
+  --ink3:   #e9ecf4;
+  --ink4:   #d8dce8;
+  --line:   #ced4e3;
+  --line2:  #b8c0d4;
+  --fog:    #7a849e;
+  --mist:   #5a6480;
+  --silver: #3a4260;
+  --snow:   #1a1f2e;
+  --white:  #0c0e12;
+
+  --lime:   #4d7c0f;
+  --lime2:  #365314;
+  --cyan:   #0e7490;
+  --cyan2:  #155e75;
+  --amber:  #b45309;
+  --amber2: #92400e;
+  --rose:   #be123c;
+  --rose2:  #9f1239;
+  --violet: #7e22ce;
+  --blue:   #1d4ed8;
+}
+
+/* ── THEME TRANSITION ────────────────────────── */
+body, .card, .nav, .kpi, .inp-wrap, .comp-card, .notice, .tbl-wrap, thead tr, .cur-sw, .hdr {
+  transition: background-color 0.25s ease, border-color 0.25s ease, color 0.15s ease;
+}
+
+/* ── RESET ───────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 14px; scroll-behavior: smooth; }
+body {
+  background: var(--ink);
+  color: var(--snow);
+  font-family: var(--sans);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── GRID NOISE BACKGROUND ───────────────────── */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 40px 40px;
+  opacity: 0.25;
+  pointer-events: none;
+  z-index: 0;
+}
+body::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: radial-gradient(ellipse 60% 50% at 50% 0%, rgba(163,230,53,0.04) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ── LAYOUT ──────────────────────────────────── */
+.app { position: relative; z-index: 1; max-width: 1000px; margin: 0 auto; padding: 28px 16px 80px; }
+
+/* ── HEADER ──────────────────────────────────── */
+.hdr {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+  gap: 12px;
+}
+.hdr-brand { display: flex; align-items: center; gap: 14px; }
+.hdr-logo {
+  width: 38px; height: 38px;
+  background: var(--lime);
+  border-radius: 8px;
+  display: grid; place-items: center;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.hdr-title {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: var(--white);
+  letter-spacing: -0.3px;
+  line-height: 1;
+}
+.hdr-title span { color: var(--lime); }
+.hdr-sub {
+  font-size: 0.7rem;
+  color: var(--fog);
+  margin-top: 3px;
+  font-weight: 400;
+  letter-spacing: 0.3px;
+}
+
+/* CURRENCY SWITCHER */
+.cur-sw {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--ink2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 5px 8px;
+}
+.cur-sw label { font-size: 0.68rem; color: var(--fog); font-weight: 600; letter-spacing: 0.5px; }
+.cur-pill {
+  background: transparent;
+  border: 1px solid var(--line2);
+  color: var(--mist);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 4px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.cur-pill.on { background: var(--lime); border-color: var(--lime); color: var(--ink); font-weight: 700; }
+.tc-field {
+  display: flex; align-items: center; gap: 6px;
+  padding-left: 6px;
+  border-left: 1px solid var(--line);
+  margin-left: 2px;
+}
+.tc-field span { font-size: 0.68rem; color: var(--fog); }
+.tc-field input {
+  width: 70px;
+  background: var(--ink3);
+  border: 1px solid var(--line2);
+  border-radius: 5px;
+  color: var(--snow);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+  padding: 4px 7px;
+  outline: none;
+}
+.tc-field input:focus { border-color: var(--lime); }
+
+/* ── NAV TABS ────────────────────────────────── */
+.nav {
+  display: flex;
+  gap: 2px;
+  background: var(--ink2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 4px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+.nav::-webkit-scrollbar { display: none; }
+.nav-btn {
+  flex: 0 0 auto;
+  background: transparent;
+  border: none;
+  color: var(--fog);
+  font-family: var(--sans);
+  font-size: 0.75rem;
+  font-weight: 600;
+  padding: 8px 14px;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  display: flex; align-items: center; gap: 6px;
+  letter-spacing: 0.2px;
+}
+.nav-btn:hover { background: var(--ink3); color: var(--silver); }
+.nav-btn.on { background: var(--ink3); color: var(--white); border: 1px solid var(--line2); }
+.nav-btn.on .nav-dot { background: var(--lime); }
+.nav-dot {
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--fog);
+  transition: background 0.15s;
+}
+
+/* ── PANELS ──────────────────────────────────── */
+.panel { display: none; animation: fadeUp 0.18s ease; }
+.panel.on { display: block; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── CARD ────────────────────────────────────── */
+.card {
+  background: var(--ink2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 18px;
+  margin-bottom: 14px;
+  position: relative;
+}
+.card-hd {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--fog);
+  margin-bottom: 16px;
+  display: flex; align-items: center; gap: 8px;
+}
+.card-hd-icon { font-size: 0.9rem; }
+.card-hd-line {
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+/* ── FIELD ───────────────────────────────────── */
+.field { display: flex; flex-direction: column; gap: 5px; }
+.field > label {
+  font-size: 0.67rem;
+  font-weight: 700;
+  color: var(--fog);
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+.inp-wrap {
+  display: flex;
+  align-items: stretch;
+  background: var(--ink3);
+  border: 1px solid var(--line2);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.inp-wrap:focus-within {
+  border-color: var(--lime);
+  box-shadow: 0 0 0 3px rgba(163,230,53,0.08);
+}
+.inp-wrap.accent:focus-within { border-color: var(--cyan); box-shadow: 0 0 0 3px rgba(34,211,238,0.08); }
+.inp-pre, .inp-suf {
+  padding: 0 10px;
+  background: var(--ink4);
+  color: var(--fog);
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  display: flex; align-items: center;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.inp-wrap input, .inp-wrap select {
+  flex: 1;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: var(--snow);
+  font-family: var(--mono);
+  font-size: 0.88rem;
+  padding: 0 10px;
+  height: 40px;
+  min-width: 0;
+}
+.inp-wrap.lg input { font-size: 1.15rem; height: 48px; font-weight: 500; }
+.inp-wrap.xl input { font-size: 1.5rem; height: 56px; font-weight: 700; }
+.inp-wrap input::-webkit-outer-spin-button,
+.inp-wrap input::-webkit-inner-spin-button { -webkit-appearance: none; }
+.inp-wrap select { cursor: pointer; }
+
+/* ── GRIDS ───────────────────────────────────── */
+.g2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.g3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; }
+.g4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; }
+@media(max-width:640px) {
+  .g2, .g3, .g4 { grid-template-columns: 1fr 1fr; }
+}
+@media(max-width:400px) { .g3, .g4 { grid-template-columns: 1fr 1fr; } }
+
+/* ── KPI TILES ───────────────────────────────── */
+.kpi-row { display: grid; gap: 10px; }
+.kpi-row.cols2 { grid-template-columns: 1fr 1fr; }
+.kpi-row.cols3 { grid-template-columns: repeat(3,1fr); }
+.kpi-row.cols4 { grid-template-columns: repeat(4,1fr); }
+@media(max-width:640px) { .kpi-row.cols4, .kpi-row.cols3 { grid-template-columns: 1fr 1fr; } }
+
+.kpi {
+  background: var(--ink3);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px 10px;
+  position: relative;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+.kpi::after {
+  content: '';
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 2px;
+}
+.kpi.lime::after { background: var(--lime); }
+.kpi.cyan::after { background: var(--cyan); }
+.kpi.amber::after { background: var(--amber); }
+.kpi.rose::after { background: var(--rose); }
+.kpi.violet::after { background: var(--violet); }
+.kpi.blue::after { background: var(--blue); }
+.kpi-lbl {
+  font-size: 0.63rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: var(--fog);
+  margin-bottom: 6px;
+}
+.kpi-val {
+  font-family: var(--mono);
+  font-size: 1.05rem;
+  font-weight: 500;
+  color: var(--snow);
+  line-height: 1.2;
+  word-break: break-all;
+}
+.kpi-val.lime { color: var(--lime); }
+.kpi-val.cyan { color: var(--cyan); }
+.kpi-val.amber { color: var(--amber); }
+.kpi-val.rose { color: var(--rose); }
+.kpi-val.violet { color: var(--violet); }
+.kpi-val.blue { color: var(--blue); }
+.kpi-sub { font-size: 0.6rem; color: var(--fog); margin-top: 3px; }
+
+/* ── DIVIDER ─────────────────────────────────── */
+hr { border: none; border-top: 1px solid var(--line); margin: 14px 0; }
+
+/* ── NOTICE ──────────────────────────────────── */
+.notice {
+  font-size: 0.72rem;
+  color: var(--silver);
+  padding: 9px 12px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 14px;
+  line-height: 1.55;
+  border-left: 2px solid var(--line2);
+  background: var(--ink3);
+}
+.notice.info { border-left-color: var(--cyan); }
+.notice.warn { border-left-color: var(--amber); }
+.notice.good { border-left-color: var(--lime); }
+.notice.bad  { border-left-color: var(--rose); }
+
+/* ── TABLE ───────────────────────────────────── */
+.tbl-wrap { overflow-x: auto; border-radius: var(--radius-sm); border: 1px solid var(--line); }
+table { width: 100%; border-collapse: collapse; font-size: 0.78rem; }
+thead tr { background: var(--ink3); }
+th {
+  text-align: left;
+  padding: 9px 12px;
+  color: var(--fog);
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  border-bottom: 1px solid var(--line);
+  white-space: nowrap;
+}
+td {
+  padding: 9px 12px;
+  border-bottom: 1px solid var(--line);
+  color: var(--silver);
+  font-family: var(--mono);
+  font-size: 0.78rem;
+}
+tr:last-child td { border-bottom: none; }
+tbody tr:hover td { background: rgba(255,255,255,0.015); }
+.tr-hi td { background: rgba(163,230,53,0.04) !important; }
+
+/* ── BADGE ───────────────────────────────────── */
+.badge {
+  display: inline-block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  font-family: var(--mono);
+}
+.b-lime { background: rgba(163,230,53,0.12); color: var(--lime); }
+.b-rose { background: rgba(251,113,133,0.12); color: var(--rose); }
+.b-amber { background: rgba(251,191,36,0.12); color: var(--amber); }
+.b-cyan { background: rgba(34,211,238,0.12); color: var(--cyan); }
+
+/* ── RANGE ───────────────────────────────────── */
+.range-wrap { padding: 4px 0; }
+input[type=range] {
+  -webkit-appearance: none;
+  width: 100%; height: 3px;
+  background: var(--ink4);
+  border-radius: 2px;
+  outline: none;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 14px; height: 14px;
+  border-radius: 50%;
+  background: var(--lime);
+  cursor: pointer;
+  border: 2px solid var(--ink);
+}
+
+/* ── TOGGLE ──────────────────────────────────── */
+.tog { display: flex; align-items: center; gap: 8px; }
+.tog-lbl { font-size: 0.72rem; color: var(--mist); }
+.sw { position: relative; width: 32px; height: 18px; flex-shrink: 0; }
+.sw input { opacity: 0; width: 0; height: 0; position: absolute; }
+.sw-track {
+  position: absolute; inset: 0;
+  background: var(--ink4);
+  border: 1px solid var(--line2);
+  border-radius: 9px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.sw input:checked + .sw-track { background: var(--lime); border-color: var(--lime); }
+.sw-knob {
+  position: absolute;
+  top: 3px; left: 3px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--fog);
+  transition: transform 0.2s, background 0.2s;
+  pointer-events: none;
+}
+.sw input:checked ~ .sw-knob { transform: translateX(14px); background: var(--ink); }
+
+/* ── BTN ─────────────────────────────────────── */
+.btn {
+  background: var(--lime);
+  color: var(--ink);
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 8px 16px;
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 0.3px;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.btn:hover { opacity: 0.88; transform: translateY(-1px); }
+.btn-ghost {
+  background: transparent;
+  border: 1px solid var(--line2);
+  color: var(--mist);
+}
+.btn-ghost:hover { background: var(--ink3); color: var(--snow); opacity: 1; transform: none; }
+.btn-rose { background: var(--rose); }
+.btn-sm { padding: 5px 12px; font-size: 0.72rem; }
+.btn-row { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+
+/* ── SELECT ──────────────────────────────────── */
+select {
+  background: var(--ink3);
+  border: 1px solid var(--line2);
+  color: var(--snow);
+  font-family: var(--sans);
+  font-size: 0.78rem;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  outline: none;
+  cursor: pointer;
+  width: 100%;
+}
+select:focus { border-color: var(--lime); }
+
+/* ── SECTION LABEL ───────────────────────────── */
+.sec-lbl {
+  font-size: 0.62rem;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: var(--fog);
+  margin: 18px 0 10px;
+  display: flex; align-items: center; gap: 8px;
+}
+.sec-lbl::after { content:''; flex:1; height:1px; background:var(--line); }
+
+/* ── COMP PRODUCT CARD ───────────────────────── */
+.comp-card {
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 14px;
+  margin-bottom: 10px;
+  background: var(--ink3);
+  position: relative;
+}
+.comp-card-num {
+  position: absolute;
+  top: -1px; left: 14px;
+  font-size: 0.6rem; font-weight: 700;
+  letter-spacing: 1px;
+  background: var(--ink4);
+  border: 1px solid var(--line2);
+  border-top: none;
+  color: var(--fog);
+  padding: 2px 8px;
+  border-radius: 0 0 5px 5px;
+}
+
+/* ── PROFIT INDICATOR ────────────────────────── */
+.profit-bar { margin-top: 8px; }
+.profit-bar-track {
+  height: 4px;
+  background: var(--ink4);
+  border-radius: 2px;
+  overflow: hidden;
+}
+.profit-bar-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width 0.4s cubic-bezier(.4,0,.2,1);
+}
+
+/* ── RESULT HIGHLIGHT ────────────────────────── */
+.result-box {
+  background: var(--ink3);
+  border: 1px solid var(--line2);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+}
+.result-box-lbl { font-size: 0.7rem; color: var(--fog); font-weight: 700; letter-spacing: 0.8px; text-transform: uppercase; margin-bottom: 4px; }
+.result-box-val { font-family: var(--mono); font-size: 1.8rem; font-weight: 500; color: var(--lime); }
+.result-box-sub { font-size: 0.68rem; color: var(--mist); margin-top: 3px; }
+</style>
+</head>
+<body>
+<div class="app">
+
+<!-- ═══ HEADER ═══════════════════════════════════ -->
+<header class="hdr">
+  <div class="hdr-brand">
+    <div class="hdr-logo">🛒</div>
+    <div>
+      <div class="hdr-title">Retail <span>Pro</span></div>
+      <div class="hdr-sub">Suite comercial · Tienda física</div>
+    </div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+    <button id="themeBtn" onclick="toggleTheme()" title="Cambiar tema" style="
+      background:var(--ink3);border:1px solid var(--line2);color:var(--silver);
+      font-family:var(--sans);font-size:0.72rem;font-weight:600;
+      padding:6px 12px;border-radius:var(--radius-sm);cursor:pointer;
+      display:flex;align-items:center;gap:6px;letter-spacing:0.3px;">
+      <span id="themeIcon">☀️</span><span id="themeLbl">Claro</span>
+    </button>
+    <div class="cur-sw">
+      <label>MONEDA</label>
+      <button class="cur-pill on" id="btnCRC" onclick="setCur('CRC','₡')">₡ CRC</button>
+      <button class="cur-pill" id="btnUSD" onclick="setCur('USD','$')">$ USD</button>
+      <div class="tc-field" id="tcBox" style="display:none">
+        <span>T/C 1$=</span>
+        <input type="number" id="tc" value="520" oninput="onTC()">
+        <span>₡</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ═══ NAV ════════════════════════════════════════ -->
+<nav class="nav">
+  <button class="nav-btn on" onclick="go('precio',this)"><div class="nav-dot"></div>💰 Precios & Márgenes</button>
+  <button class="nav-btn" onclick="go('promo',this)"><div class="nav-dot"></div>🏷️ Descuentos & Promos</button>
+  <button class="nav-btn" onclick="go('break',this)"><div class="nav-dot"></div>📊 Break-even</button>
+  <button class="nav-btn" onclick="go('inv',this)"><div class="nav-dot"></div>📦 Inventario</button>
+  <button class="nav-btn" onclick="go('comp',this)"><div class="nav-dot"></div>⚖️ Comparar</button>
+  <button class="nav-btn" onclick="go('caja',this)"><div class="nav-dot"></div>🧮 Cierre de Caja</button>
+</nav>
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- TAB 1: PRECIOS -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="panel on" id="panel-precio">
+
+  <div class="card">
+    <div class="card-hd"><span class="card-hd-icon">⚙️</span> Configuración del Producto <div class="card-hd-line"></div></div>
+    <div class="g2" style="margin-bottom:12px;">
+      <div class="field">
+        <label>Costo Proveedor (sin IV)</label>
+        <div class="inp-wrap lg"><div class="inp-pre" id="s1">₡</div><input type="number" id="pCosto" placeholder="0.00" oninput="calcPrecio()"></div>
+      </div>
+      <div class="field">
+        <label>Impuesto de Ventas</label>
+        <div class="inp-wrap">
+          <select id="pIVSel" onchange="onIVSel()">
+            <option value="13">13% — Estándar</option>
+            <option value="4">4% — Reducido</option>
+            <option value="2">2% — Básico</option>
+            <option value="1">1% — Canasta básica</option>
+            <option value="0">0% — Exento</option>
+            <option value="x">Personalizado…</option>
+          </select>
+        </div>
+        <div class="inp-wrap" id="pIVCustomBox" style="display:none; margin-top:6px;">
+          <input type="number" id="pIVCustom" value="13" oninput="calcPrecio()"><div class="inp-suf">%</div>
+        </div>
+      </div>
+    </div>
+    <div class="g2" style="margin-bottom:14px;">
+      <div class="field">
+        <label>Markup sobre costo <span style="color:var(--fog);font-weight:400;text-transform:none;letter-spacing:0">&nbsp;— ganancia ÷ costo</span></label>
+        <div class="inp-wrap lg"><input type="number" id="pMarkup" value="67" oninput="calcDesdeMarkup()"><div class="inp-suf">%</div></div>
+        <div class="range-wrap"><input type="range" id="pMarkupRange" min="0" max="300" value="67" oninput="syncMarkupRange()"></div>
+      </div>
+      <div class="field">
+        <label>Margen Real (Gross) <span style="color:var(--lime);font-weight:600;text-transform:none;letter-spacing:0">&nbsp;✦ lo que te queda</span></label>
+        <div class="inp-wrap lg" style="border-color:rgba(163,230,53,0.35);">
+          <input type="number" id="pMargen" value="40.12" style="color:var(--lime);" oninput="calcDesdeMargen()">
+          <div class="inp-suf" style="color:var(--lime);">%</div>
+        </div>
+        <div class="range-wrap"><input type="range" id="pMargenRange" min="0" max="90" value="40" oninput="syncMargenRange()"></div>
+      </div>
+    </div>
+    <div class="tog" style="margin-bottom:2px;">
+      <label class="sw"><input type="checkbox" id="chkRound" checked onchange="calcPrecio()"><div class="sw-track"></div><div class="sw-knob"></div></label>
+      <span class="tog-lbl">Redondear precio al múltiplo de ₡50 más cercano (arriba)</span>
+    </div>
+  </div>
+
+  <!-- PRECIO FINAL -->
+  <div class="card" style="border-color: rgba(34,211,238,0.25);">
+    <div class="card-hd"><span class="card-hd-icon">💰</span> Precio de Venta Final <div class="card-hd-line"></div><span style="font-size:0.65rem;color:var(--cyan);font-weight:600;letter-spacing:0.3px;">EDITABLE — calcula inverso</span></div>
+    <div class="inp-wrap xl accent">
+      <div class="inp-pre" id="s2" style="color:var(--cyan);background:rgba(34,211,238,0.06);">₡</div>
+      <input type="number" id="pFinal" placeholder="0" style="color:var(--cyan);" oninput="calcDesdePreFinal()">
+    </div>
+  </div>
+
+  <!-- KPIs PRINCIPALES -->
+  <div class="kpi-row cols4" style="margin-bottom:14px;">
+    <div class="kpi lime">
+      <div class="kpi-lbl">Ganancia Neta</div>
+      <div class="kpi-val lime" id="kGanancia">—</div>
+      <div class="kpi-sub">Precio s/IV − Costo</div>
+      <div class="profit-bar"><div class="profit-bar-track"><div class="profit-bar-fill" id="kGanBar" style="background:var(--lime);width:0%"></div></div></div>
+    </div>
+    <div class="kpi amber">
+      <div class="kpi-lbl">Margen Real (Gross)</div>
+      <div class="kpi-val amber" id="kMargen">—</div>
+      <div class="kpi-sub">Ganancia / Precio s/IV</div>
+    </div>
+    <div class="kpi cyan">
+      <div class="kpi-lbl">Precio sin IV</div>
+      <div class="kpi-val cyan" id="kSinIV">—</div>
+      <div class="kpi-sub">Base imponible</div>
+    </div>
+    <div class="kpi rose">
+      <div class="kpi-lbl">Monto IV</div>
+      <div class="kpi-val rose" id="kIV">—</div>
+      <div class="kpi-sub">A declarar a Hacienda</div>
+    </div>
+  </div>
+
+  <!-- TABLA ESCALA -->
+  <div class="card">
+    <div class="card-hd"><span class="card-hd-icon">📐</span> Escala de Rentabilidad <div class="card-hd-line"></div></div>
+    <div class="notice info">Variaciones automáticas del markup con precios, ganancias y márgenes resultantes.</div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr>
+          <th>Escenario</th><th>Markup</th><th>Precio c/IV</th><th>Precio s/IV</th><th>Ganancia</th><th>Margen</th><th>Estado</th>
+        </tr></thead>
+        <tbody id="tbEscala"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /panel-precio -->
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- TAB 2: DESCUENTOS & PROMOS -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="panel" id="panel-promo">
+
+  <div class="g2">
+    <!-- DESCUENTO SIMPLE -->
+    <div class="card">
+      <div class="card-hd"><span class="card-hd-icon">🏷️</span> Calculadora de Descuento <div class="card-hd-line"></div></div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>Precio original (con IV)</label>
+        <div class="inp-wrap lg"><div class="inp-pre" id="sd1">₡</div><input type="number" id="dOrig" placeholder="0" oninput="calcDesc()"></div>
+      </div>
+      <div class="field" style="margin-bottom:8px;">
+        <label>Descuento</label>
+        <div style="display:flex;gap:8px;">
+          <div class="inp-wrap" style="flex:1"><input type="number" id="dPct" placeholder="%" min="0" max="100" oninput="calcDesc('pct')"><div class="inp-suf">%</div></div>
+          <div style="display:flex;align-items:center;color:var(--fog);font-size:0.75rem;">ó</div>
+          <div class="inp-wrap" style="flex:1"><div class="inp-pre" id="sd2">₡</div><input type="number" id="dAmt" placeholder="monto" oninput="calcDesc('amt')"></div>
+        </div>
+      </div>
+      <div class="range-wrap">
+        <input type="range" id="dRange" min="0" max="80" value="0" oninput="dRange()">
+        <div style="display:flex;justify-content:space-between;margin-top:2px;">
+          <span style="font-size:0.6rem;color:var(--fog)">0%</span>
+          <span style="font-size:0.6rem;color:var(--fog)" id="dRangeLbl">0%</span>
+          <span style="font-size:0.6rem;color:var(--fog)">80%</span>
+        </div>
+      </div>
+      <hr>
+      <div class="kpi-row cols2">
+        <div class="kpi cyan"><div class="kpi-lbl">Precio Final</div><div class="kpi-val cyan" id="dFinal">—</div></div>
+        <div class="kpi rose"><div class="kpi-lbl">Ahorro Cliente</div><div class="kpi-val rose" id="dAhorro">—</div></div>
+      </div>
+      <div class="notice" id="dNotice" style="margin-top:10px;margin-bottom:0">Ingresa datos para ver análisis.</div>
+    </div>
+
+    <!-- PRECIO MÍNIMO -->
+    <div class="card">
+      <div class="card-hd"><span class="card-hd-icon">🔒</span> Precio Mínimo sin Pérdida <div class="card-hd-line"></div></div>
+      <div class="notice info">¿Hasta dónde puedo bajar el precio sin perder dinero?</div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>Costo (sin IV)</label>
+        <div class="inp-wrap"><div class="inp-pre" id="spm1">₡</div><input type="number" id="pmCosto" placeholder="0" oninput="calcPM()"></div>
+      </div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>Margen mínimo deseado</label>
+        <div class="inp-wrap"><input type="number" id="pmMargen" value="25" oninput="calcPM()"><div class="inp-suf">%</div></div>
+      </div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>IV aplicable</label>
+        <div class="inp-wrap"><input type="number" id="pmIV" value="13" oninput="calcPM()"><div class="inp-suf">%</div></div>
+      </div>
+      <hr>
+      <div class="kpi-row cols2">
+        <div class="kpi lime"><div class="kpi-lbl">Precio mínimo (c/IV)</div><div class="kpi-val lime" id="pmRes">—</div></div>
+        <div class="kpi violet"><div class="kpi-lbl">Markup implícito</div><div class="kpi-val violet" id="pmMk">—</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SIMULADOR PROMO -->
+  <div class="card">
+    <div class="card-hd"><span class="card-hd-icon">📣</span> Simulador de Promoción — Punto de Indiferencia <div class="card-hd-line"></div></div>
+    <div class="notice info">¿Cuántas unidades más debo vender para que la promo genere la misma ganancia total que antes?</div>
+    <div class="g3" style="margin-bottom:14px;">
+      <div class="field">
+        <label>Precio actual (c/IV)</label>
+        <div class="inp-wrap"><div class="inp-pre" id="spr1">₡</div><input type="number" id="prPrecio" placeholder="0" oninput="calcPromo()"></div>
+      </div>
+      <div class="field">
+        <label>Costo unitario (sin IV)</label>
+        <div class="inp-wrap"><div class="inp-pre" id="spr2">₡</div><input type="number" id="prCosto" placeholder="0" oninput="calcPromo()"></div>
+      </div>
+      <div class="field">
+        <label>Unidades vendidas / mes</label>
+        <div class="inp-wrap"><input type="number" id="prUnid" value="100" oninput="calcPromo()"></div>
+      </div>
+      <div class="field">
+        <label>Descuento promo</label>
+        <div class="inp-wrap"><input type="number" id="prDesc" value="15" oninput="calcPromo()"><div class="inp-suf">%</div></div>
+      </div>
+      <div class="field">
+        <label>IV aplicable</label>
+        <div class="inp-wrap"><input type="number" id="prIV" value="13" oninput="calcPromo()"><div class="inp-suf">%</div></div>
+      </div>
+    </div>
+    <div class="kpi-row cols4">
+      <div class="kpi amber"><div class="kpi-lbl">Ganancia actual / mes</div><div class="kpi-val amber" id="prGanAct">—</div></div>
+      <div class="kpi rose"><div class="kpi-lbl">Ganancia c/ promo (uds. actuales)</div><div class="kpi-val rose" id="prGanPromo">—</div></div>
+      <div class="kpi cyan"><div class="kpi-lbl">Uds. necesarias (punto indif.)</div><div class="kpi-val cyan" id="prUnidNec">—</div></div>
+      <div class="kpi lime"><div class="kpi-lbl">% incremento requerido</div><div class="kpi-val lime" id="prIncr">—</div></div>
+    </div>
+    <div class="notice" id="promoNotice" style="margin-top:10px;margin-bottom:0">Completa los campos para ver el análisis.</div>
+  </div>
+
+  <!-- LOTE / MAYOREO -->
+  <div class="card">
+    <div class="card-hd"><span class="card-hd-icon">📦</span> Precio por Lote / Mayoreo <div class="card-hd-line"></div></div>
+    <div class="notice info">Calcula precio unitario especial al comprar por volumen, manteniendo margen mínimo.</div>
+    <div class="g3">
+      <div class="field">
+        <label>Precio unitario normal (c/IV)</label>
+        <div class="inp-wrap"><div class="inp-pre" id="slote1">₡</div><input type="number" id="lotePrecio" placeholder="0" oninput="calcLote()"></div>
+      </div>
+      <div class="field">
+        <label>Costo unitario (sin IV)</label>
+        <div class="inp-wrap"><div class="inp-pre" id="slote2">₡</div><input type="number" id="loteCosto" placeholder="0" oninput="calcLote()"></div>
+      </div>
+      <div class="field">
+        <label>IV aplicable</label>
+        <div class="inp-wrap"><input type="number" id="loteIV" value="13" oninput="calcLote()"><div class="inp-suf">%</div></div>
+      </div>
+      <div class="field">
+        <label>Unidades en el lote</label>
+        <div class="inp-wrap"><input type="number" id="loteUnid" value="6" oninput="calcLote()"></div>
+      </div>
+      <div class="field">
+        <label>Descuento por lote</label>
+        <div class="inp-wrap"><input type="number" id="lotePct" value="10" oninput="calcLote()"><div class="inp-suf">%</div></div>
+      </div>
+    </div>
+    <div class="kpi-row cols4" style="margin-top:12px;">
+      <div class="kpi lime"><div class="kpi-lbl">Precio lote total</div><div class="kpi-val lime" id="lotePrecioTotal">—</div></div>
+      <div class="kpi cyan"><div class="kpi-lbl">Precio unit. especial</div><div class="kpi-val cyan" id="lotePrecioUnit">—</div></div>
+      <div class="kpi amber"><div class="kpi-lbl">Ahorro total cliente</div><div class="kpi-val amber" id="loteAhorro">—</div></div>
+      <div class="kpi violet"><div class="kpi-lbl">Margen resultante</div><div class="kpi-val violet" id="loteMargen">—</div></div>
+    </div>
+  </div>
+
+</div><!-- /panel-promo -->
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- TAB 3: BREAK-EVEN -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="panel" id="panel-break">
+
+  <div class="g2">
+    <div class="card">
+      <div class="card-hd"><span class="card-hd-icon">📊</span> Punto de Equilibrio <div class="card-hd-line"></div></div>
+      <div class="notice info">¿Cuántas unidades debo vender para cubrir todos mis costos?</div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>Costos fijos mensuales</label>
+        <div class="inp-wrap"><div class="inp-pre" id="sbecf">₡</div><input type="number" id="beCF" placeholder="Alquiler + salarios + servicios…" oninput="calcBE()"></div>
+      </div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>Precio de venta unitario (c/IV)</label>
+        <div class="inp-wrap"><div class="inp-pre" id="sbepv">₡</div><input type="number" id="bePV" placeholder="0" oninput="calcBE()"></div>
+      </div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>Costo variable unitario (sin IV)</label>
+        <div class="inp-wrap"><div class="inp-pre" id="sbecv">₡</div><input type="number" id="beCV" placeholder="0" oninput="calcBE()"></div>
+      </div>
+      <div class="g2">
+        <div class="field">
+          <label>IV sobre precio venta</label>
+          <div class="inp-wrap"><input type="number" id="beIV" value="13" oninput="calcBE()"><div class="inp-suf">%</div></div>
+        </div>
+        <div class="field">
+          <label>Comisión vendedor</label>
+          <div class="inp-wrap"><input type="number" id="beCom" value="0" oninput="calcBE()"><div class="inp-suf">%</div></div>
+        </div>
+      </div>
+      <hr>
+      <div class="kpi-row cols2">
+        <div class="kpi amber"><div class="kpi-lbl">Unidades BE</div><div class="kpi-val amber" id="beUnid">—</div><div class="kpi-sub">para cubrir costos</div></div>
+        <div class="kpi cyan"><div class="kpi-lbl">Ventas BE</div><div class="kpi-val cyan" id="beVentas">—</div><div class="kpi-sub">en dinero</div></div>
+        <div class="kpi lime"><div class="kpi-lbl">Margen contrib. unit.</div><div class="kpi-val lime" id="beMCU">—</div></div>
+        <div class="kpi violet"><div class="kpi-lbl">% Margen contrib.</div><div class="kpi-val violet" id="bePMC">—</div></div>
+      </div>
+    </div>
+
+    <div>
+      <!-- OBJETIVO -->
+      <div class="card" style="margin-bottom:14px;">
+        <div class="card-hd"><span class="card-hd-icon">🎯</span> Meta de Utilidad <div class="card-hd-line"></div></div>
+        <div class="field" style="margin-bottom:10px;">
+          <label>Utilidad objetivo mensual</label>
+          <div class="inp-wrap"><div class="inp-pre" id="sobu">₡</div><input type="number" id="obU" placeholder="0" oninput="calcOb()"></div>
+        </div>
+        <div class="kpi-row cols2">
+          <div class="kpi lime"><div class="kpi-lbl">Unidades necesarias</div><div class="kpi-val lime" id="obUnid">—</div></div>
+          <div class="kpi amber"><div class="kpi-lbl">Ventas necesarias</div><div class="kpi-val amber" id="obVentas">—</div></div>
+        </div>
+      </div>
+      <!-- PROYECCION -->
+      <div class="card">
+        <div class="card-hd"><span class="card-hd-icon">📈</span> Proyección de Utilidad <div class="card-hd-line"></div></div>
+        <div class="field" style="margin-bottom:10px;">
+          <label>Unidades proyectadas / mes</label>
+          <div class="inp-wrap"><input type="number" id="proyUnid" placeholder="0" oninput="calcProy()"></div>
+        </div>
+        <div class="kpi-row cols2">
+          <div class="kpi lime"><div class="kpi-lbl">Utilidad proyectada</div><div class="kpi-val lime" id="proyUtil">—</div></div>
+          <div class="kpi violet"><div class="kpi-lbl">ROI sobre costos</div><div class="kpi-val violet" id="proyROI">—</div></div>
+        </div>
+        <div class="notice" id="proyNotice" style="margin-top:10px;margin-bottom:0">Ingresa unidades para proyectar.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TABLA ESCENARIOS BE -->
+  <div class="card">
+    <div class="card-hd"><span class="card-hd-icon">📋</span> Tabla de Escenarios <div class="card-hd-line"></div></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>Unidades</th><th>Ingresos brutos</th><th>IV cobrado</th><th>Ingreso neto</th><th>Costo total</th><th>Utilidad</th><th>Estado</th></tr></thead>
+        <tbody id="tbBE"></tbody>
+      </table>
+    </div>
+  </div>
+
+</div><!-- /panel-break -->
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- TAB 4: INVENTARIO -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="panel" id="panel-inv">
+
+  <div class="g2">
+    <!-- ROTACION -->
+    <div class="card">
+      <div class="card-hd"><span class="card-hd-icon">🔄</span> Rotación de Inventario <div class="card-hd-line"></div></div>
+      <div class="notice info">Indica cuántas veces renuevaste tu inventario en un período.</div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>Costo de ventas del período</label>
+        <div class="inp-wrap"><div class="inp-pre" id="sricv">₡</div><input type="number" id="riCV" placeholder="0" oninput="calcRI()"></div>
+      </div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>Inventario promedio en el período</label>
+        <div class="inp-wrap"><div class="inp-pre" id="sriip">₡</div><input type="number" id="riIP" placeholder="0" oninput="calcRI()"></div>
+      </div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>Duración del período</label>
+        <div class="inp-wrap">
+          <input type="number" id="riPer" value="365" oninput="calcRI()">
+          <div class="inp-suf">días</div>
+        </div>
+      </div>
+      <hr>
+      <div class="kpi-row cols2">
+        <div class="kpi amber"><div class="kpi-lbl">Rotación</div><div class="kpi-val amber" id="riRot">—</div><div class="kpi-sub">veces por período</div></div>
+        <div class="kpi cyan"><div class="kpi-lbl">Días en inventario</div><div class="kpi-val cyan" id="riDias">—</div><div class="kpi-sub">promedio</div></div>
+      </div>
+      <div class="notice" id="riNotice" style="margin-top:10px;margin-bottom:0">Completa los datos para ver el análisis.</div>
+    </div>
+
+    <!-- ROP -->
+    <div class="card">
+      <div class="card-hd"><span class="card-hd-icon">🔔</span> Punto de Reorden (ROP) <div class="card-hd-line"></div></div>
+      <div class="notice info">¿En cuántas unidades debo hacer mi próximo pedido?</div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>Demanda diaria (unidades)</label>
+        <div class="inp-wrap"><input type="number" id="ropD" placeholder="0" oninput="calcROP()"></div>
+      </div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>Lead time del proveedor</label>
+        <div class="inp-wrap"><input type="number" id="ropLT" placeholder="0" oninput="calcROP()"><div class="inp-suf">días</div></div>
+      </div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>Stock de seguridad extra</label>
+        <div class="inp-wrap"><input type="number" id="ropSS" value="3" oninput="calcROP()"><div class="inp-suf">días</div></div>
+      </div>
+      <div class="field" style="margin-bottom:10px;">
+        <label>Costo unitario (sin IV)</label>
+        <div class="inp-wrap"><div class="inp-pre" id="sropcu">₡</div><input type="number" id="ropCU" placeholder="0" oninput="calcROP()"></div>
+      </div>
+      <hr>
+      <div class="kpi-row cols2">
+        <div class="kpi lime"><div class="kpi-lbl">Punto de reorden</div><div class="kpi-val lime" id="ropRes">—</div><div class="kpi-sub">unidades</div></div>
+        <div class="kpi violet"><div class="kpi-lbl">Stock seguridad</div><div class="kpi-val violet" id="ropSS2">—</div><div class="kpi-sub">unidades</div></div>
+        <div class="kpi amber"><div class="kpi-lbl">Inversión reorden</div><div class="kpi-val amber" id="ropInv">—</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EOQ -->
+  <div class="card">
+    <div class="card-hd"><span class="card-hd-icon">⚡</span> Cantidad Económica de Pedido — EOQ <div class="card-hd-line"></div></div>
+    <div class="notice info">Tamaño de pedido que <strong>minimiza</strong> el costo total entre ordenar y almacenar.</div>
+    <div class="g4">
+      <div class="field">
+        <label>Demanda anual (uds.)</label>
+        <div class="inp-wrap"><input type="number" id="eoqD" placeholder="0" oninput="calcEOQ()"></div>
+      </div>
+      <div class="field">
+        <label>Costo por orden</label>
+        <div class="inp-wrap"><div class="inp-pre" id="seoqo">₡</div><input type="number" id="eoqO" placeholder="0" oninput="calcEOQ()"></div>
+      </div>
+      <div class="field">
+        <label>Costo de mantener inv.</label>
+        <div class="inp-wrap"><input type="number" id="eoqH" value="25" oninput="calcEOQ()"><div class="inp-suf">%/año</div></div>
+      </div>
+      <div class="field">
+        <label>Costo unitario (sin IV)</label>
+        <div class="inp-wrap"><div class="inp-pre" id="seoqcu">₡</div><input type="number" id="eoqCU" placeholder="0" oninput="calcEOQ()"></div>
+      </div>
+    </div>
+    <div class="kpi-row cols4" style="margin-top:12px;">
+      <div class="kpi cyan"><div class="kpi-lbl">EOQ óptimo</div><div class="kpi-val cyan" id="eoqRes">—</div><div class="kpi-sub">unidades/pedido</div></div>
+      <div class="kpi lime"><div class="kpi-lbl">Pedidos al año</div><div class="kpi-val lime" id="eoqPed">—</div></div>
+      <div class="kpi amber"><div class="kpi-lbl">Costo total anual</div><div class="kpi-val amber" id="eoqCT">—</div></div>
+      <div class="kpi violet"><div class="kpi-lbl">Pedir cada</div><div class="kpi-val violet" id="eoqCada">—</div><div class="kpi-sub">días</div></div>
+    </div>
+  </div>
+
+  <!-- COSTO TOTAL DE PRODUCTO -->
+  <div class="card">
+    <div class="card-hd"><span class="card-hd-icon">🚚</span> Costo Real del Producto (Landed Cost) <div class="card-hd-line"></div></div>
+    <div class="notice info">Calcula el costo real incluyendo flete, aduana, merma y costos indirectos de manejo.</div>
+    <div class="g3">
+      <div class="field">
+        <label>Costo proveedor (sin IV)</label>
+        <div class="inp-wrap"><div class="inp-pre" id="slc1">₡</div><input type="number" id="lcCosto" placeholder="0" oninput="calcLC()"></div>
+      </div>
+      <div class="field">
+        <label>Flete / transporte</label>
+        <div class="inp-wrap"><div class="inp-pre" id="slc2">₡</div><input type="number" id="lcFlete" placeholder="0" oninput="calcLC()"></div>
+      </div>
+      <div class="field">
+        <label>Aduana / aranceles</label>
+        <div class="inp-wrap"><div class="inp-pre" id="slc3">₡</div><input type="number" id="lcAduana" placeholder="0" oninput="calcLC()"></div>
+      </div>
+      <div class="field">
+        <label>Merma esperada</label>
+        <div class="inp-wrap"><input type="number" id="lcMerma" value="0" oninput="calcLC()"><div class="inp-suf">%</div></div>
+      </div>
+      <div class="field">
+        <label>Otros costos indirectos</label>
+        <div class="inp-wrap"><div class="inp-pre" id="slc4">₡</div><input type="number" id="lcOtros" placeholder="0" oninput="calcLC()"></div>
+      </div>
+      <div class="field">
+        <label>Cantidad de unidades</label>
+        <div class="inp-wrap"><input type="number" id="lcUnid" value="1" oninput="calcLC()"></div>
+      </div>
+    </div>
+    <div class="kpi-row cols3" style="margin-top:12px;">
+      <div class="kpi lime"><div class="kpi-lbl">Costo real total</div><div class="kpi-val lime" id="lcTotal">—</div></div>
+      <div class="kpi cyan"><div class="kpi-lbl">Costo unitario real</div><div class="kpi-val cyan" id="lcUnit">—</div><div class="kpi-sub">Usa este valor como base de precio</div></div>
+      <div class="kpi rose"><div class="kpi-lbl">Sobrecosto vs. proveedor</div><div class="kpi-val rose" id="lcSobre">—</div></div>
+    </div>
+  </div>
+
+</div><!-- /panel-inv -->
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- TAB 5: COMPARAR -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="panel" id="panel-comp">
+
+  <div class="card">
+    <div class="card-hd"><span class="card-hd-icon">⚖️</span> Comparador de Productos / Proveedores <div class="card-hd-line"></div></div>
+    <div class="notice info">Compara rentabilidad de múltiples productos o fuentes para elegir la mejor opción.</div>
+    <div class="g2" style="margin-bottom:10px;">
+      <div class="field">
+        <label>IV aplicable a todos</label>
+        <div class="inp-wrap"><input type="number" id="compIV" value="13" oninput="calcComp()"><div class="inp-suf">%</div></div>
+      </div>
+      <div class="field">
+        <label>Ordenar resultados por</label>
+        <select id="compSort" onchange="calcComp()">
+          <option value="margen">Mayor margen</option>
+          <option value="ganancia">Mayor ganancia</option>
+          <option value="markup">Mayor markup</option>
+        </select>
+      </div>
+    </div>
+    <div id="compList"></div>
+    <div class="btn-row">
+      <button class="btn btn-sm" onclick="addComp()">+ Agregar producto</button>
+      <button class="btn btn-sm btn-ghost" onclick="clearComps()">Limpiar todo</button>
+    </div>
+  </div>
+
+  <div class="card" id="compResCard" style="display:none">
+    <div class="card-hd"><span class="card-hd-icon">📋</span> Resultados Comparativos <div class="card-hd-line"></div></div>
+    <div class="tbl-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Nombre</th><th>Costo</th><th>Precio c/IV</th><th>Precio s/IV</th><th>Ganancia</th><th>Markup</th><th>Margen</th><th>Mejor</th></tr></thead>
+        <tbody id="tbComp"></tbody>
+      </table>
+    </div>
+    <div id="compWinner" style="margin-top:14px;"></div>
+  </div>
+
+</div><!-- /panel-comp -->
+
+<!-- ═══════════════════════════════════════════════ -->
+<!-- TAB 6: CIERRE DE CAJA -->
+<!-- ═══════════════════════════════════════════════ -->
+<div class="panel" id="panel-caja">
+
+  <div class="card">
+    <div class="card-hd"><span class="card-hd-icon">🧮</span> Resumen de Ventas del Día <div class="card-hd-line"></div></div>
+    <div class="notice info">Ingresa las ventas del día para obtener el resumen de IV, ganancia neta y efectivo esperado en caja.</div>
+    <div class="g3" style="margin-bottom:14px;">
+      <div class="field">
+        <label>Ventas brutas (c/IV)</label>
+        <div class="inp-wrap lg"><div class="inp-pre" id="scajav">₡</div><input type="number" id="cajaVentas" placeholder="0" oninput="calcCaja()"></div>
+      </div>
+      <div class="field">
+        <label>Costo de ventas (sin IV)</label>
+        <div class="inp-wrap lg"><div class="inp-pre" id="scajac">₡</div><input type="number" id="cajaCosto" placeholder="0" oninput="calcCaja()"></div>
+      </div>
+      <div class="field">
+        <label>IV promedio de ventas</label>
+        <div class="inp-wrap lg"><input type="number" id="cajaIV" value="13" oninput="calcCaja()"><div class="inp-suf">%</div></div>
+      </div>
+    </div>
+    <div class="g2" style="margin-bottom:14px;">
+      <div class="field">
+        <label>Gastos del día (efectivo)</label>
+        <div class="inp-wrap"><div class="inp-pre" id="scajage">₡</div><input type="number" id="cajaGastos" placeholder="0" oninput="calcCaja()"></div>
+      </div>
+      <div class="field">
+        <label>Devoluciones / ajustes</label>
+        <div class="inp-wrap"><div class="inp-pre" id="scajadev">₡</div><input type="number" id="cajaDevol" placeholder="0" oninput="calcCaja()"></div>
+      </div>
+    </div>
+    <hr>
+    <div class="kpi-row cols4">
+      <div class="kpi lime"><div class="kpi-lbl">Ventas netas (s/IV)</div><div class="kpi-val lime" id="cajaSinIV">—</div></div>
+      <div class="kpi rose"><div class="kpi-lbl">IV recaudado</div><div class="kpi-val rose" id="cajaIVMonto">—</div><div class="kpi-sub">A declarar</div></div>
+      <div class="kpi amber"><div class="kpi-lbl">Ganancia bruta</div><div class="kpi-val amber" id="cajaGanBruta">—</div></div>
+      <div class="kpi cyan"><div class="kpi-lbl">Efectivo en caja</div><div class="kpi-val cyan" id="cajaEfectivo">—</div><div class="kpi-sub">Ventas − gastos − devol.</div></div>
+    </div>
+  </div>
+
+  <!-- CONVERSIÓN DUAL -->
+  <div class="card">
+    <div class="card-hd"><span class="card-hd-icon">💱</span> Conversor Rápido ₡ ↔ $ <div class="card-hd-line"></div></div>
+    <div class="g2">
+      <div class="field">
+        <label>Monto en colones (₡)</label>
+        <div class="inp-wrap lg"><div class="inp-pre">₡</div><input type="number" id="convCRC" placeholder="0" oninput="convCRC()"></div>
+      </div>
+      <div class="field">
+        <label>Monto en dólares ($)</label>
+        <div class="inp-wrap lg"><div class="inp-pre">$</div><input type="number" id="convUSD" placeholder="0" oninput="convUSD()"></div>
+      </div>
+    </div>
+    <div style="text-align:center;margin-top:10px;">
+      <span style="font-size:0.72rem;color:var(--fog);">Tipo de cambio usado: </span>
+      <span style="font-family:var(--mono);color:var(--amber);font-size:0.8rem;" id="convTC">₡520 por $1</span>
+    </div>
+  </div>
+
+</div><!-- /panel-caja -->
+
+</div><!-- /app -->
+
+<script>
+// ═══════════════════════════════════════════════════
+// THEME
+// ═══════════════════════════════════════════════════
+let isLight = false;
+function toggleTheme() {
+  isLight = !isLight;
+  document.documentElement.classList.toggle('light', isLight);
+  document.getElementById('themeIcon').innerText = isLight ? '🌙' : '☀️';
+  document.getElementById('themeLbl').innerText  = isLight ? 'Oscuro' : 'Claro';
+}
+
+// ═══════════════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════════════
+let CUR = 'CRC', SYM = '₡', TC = 520;
+let compIdx = 0;
+
+// ═══════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════
+const $ = id => document.getElementById(id);
+const v  = id => parseFloat($( id)?.value) || 0;
+const vt = id => $( id)?.value?.trim() || '';
+
+function fmt(n, decimals=0) {
+  if (!isFinite(n)) return '—';
+  return new Intl.NumberFormat('es-CR',{minimumFractionDigits:decimals,maximumFractionDigits:decimals}).format(n);
+}
+function fmtM(n) { return isFinite(n) ? SYM+' '+fmt(n) : '—'; }
+function fmtP(n) { return isFinite(n) ? fmt(n,2)+'%' : '—'; }
+function set(id,val,cls='') {
+  const el=$( id); if(!el) return;
+  el.innerText=val;
+  if(cls) el.className='kpi-val '+cls;
+}
+function getIV(selId,customId) {
+  const s=$( selId);
+  if(!s) return 13;
+  return s.value==='x' ? (v(customId)||0) : parseFloat(s.value)||0;
+}
+
+// ═══════════════════════════════════════════════════
+// CURRENCY
+// ═══════════════════════════════════════════════════
+function setCur(cur,sym) {
+  CUR=cur; SYM=sym;
+  $('btnCRC').classList.toggle('on', cur==='CRC');
+  $('btnUSD').classList.toggle('on', cur==='USD');
+  $('tcBox').style.display = cur==='USD' ? 'flex' : 'none';
+  updateSymbols();
+  $('convTC').innerText = `₡${TC} por $1`;
+}
+function onTC() {
+  TC = v('tc') || 520;
+  $('convTC').innerText = `₡${TC} por $1`;
+}
+function updateSymbols() {
+  ['s1','s2','sd1','sd2','spm1','spr1','spr2','sbecf','sbepv','sbecv','sobu',
+   'sricv','sriip','sropcu','seoqo','seoqcu','slc1','slc2','slc3','slc4',
+   'scajav','scajac','scajage','scajadev','slote1','slote2'].forEach(id=>{
+    const el=$( id); if(el) el.innerText=SYM;
+  });
+}
+
+// ═══════════════════════════════════════════════════
+// TABS
+// ═══════════════════════════════════════════════════
+function go(id, btn) {
+  document.querySelectorAll('.panel').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.nav-btn').forEach(b=>b.classList.remove('on'));
+  $('panel-'+id).classList.add('on');
+  btn.classList.add('on');
+}
+
+// ═══════════════════════════════════════════════════
+// TAB 1 — PRECIOS
+// ═══════════════════════════════════════════════════
+function onIVSel(){
+  $('pIVCustomBox').style.display = $('pIVSel').value==='x'?'flex':'none';
+  calcPrecio();
+}
+
+// Convierte markup → margen real
+function mkToMargen(mk) { return (mk / (100 + mk)) * 100; }
+// Convierte margen real → markup
+function margenToMk(mg) { return mg >= 100 ? 9999 : (mg / (100 - mg)) * 100; }
+
+// Sincroniza sliders sin loop
+function syncMarkupRange(){
+  $('pMarkup').value = $('pMarkupRange').value;
+  calcDesdeMarkup();
+}
+function syncMargenRange(){
+  $('pMargen').value = $('pMargenRange').value;
+  calcDesdeMargen();
+}
+
+// RUTA A: el usuario cambia el Markup
+function calcDesdeMarkup(){
+  const mk = v('pMarkup');
+  const mg = mkToMargen(mk);
+  // sync campos sin disparar oninput
+  $('pMargen').value = mg.toFixed(2);
+  $('pMarkupRange').value = Math.min(Math.max(mk,0),300);
+  $('pMargenRange').value = Math.min(Math.max(mg,0),90);
+  calcPrecio();
+}
+
+// RUTA B: el usuario cambia el Margen Real
+function calcDesdeMargen(){
+  const mg = v('pMargen');
+  const mk = margenToMk(mg);
+  $('pMarkup').value = isFinite(mk) ? mk.toFixed(2) : '9999';
+  $('pMarkupRange').value = Math.min(Math.max(mk,0),300);
+  $('pMargenRange').value = Math.min(Math.max(mg,0),90);
+  calcPrecio();
+}
+
+// RUTA C: el usuario cambia el Precio Final directamente
+function calcDesdePreFinal(){
+  const costo=v('pCosto'), iv=getIV('pIVSel','pIVCustom'), pf=v('pFinal');
+  if(!pf) return;
+  const pSinIV = pf/(1+iv/100);
+  const mk = costo>0 ? ((pSinIV-costo)/costo)*100 : 0;
+  const mg = mkToMargen(mk);
+  $('pMarkup').value = mk.toFixed(2);
+  $('pMargen').value = mg.toFixed(2);
+  $('pMarkupRange').value = Math.min(Math.max(mk,0),300);
+  $('pMargenRange').value = Math.min(Math.max(mg,0),90);
+  showKPIs(costo,pf,iv);
+  renderEscala(costo,iv);
+}
+
+// NÚCLEO: calcula precio y KPIs a partir de markup actual
+function calcPrecio(){
+  const costo=v('pCosto'), mk=v('pMarkup'), iv=getIV('pIVSel','pIVCustom');
+  const pSinIV = costo*(1+mk/100);
+  let pFinal   = pSinIV*(1+iv/100);
+  if($('chkRound').checked) pFinal = Math.ceil(pFinal/50)*50;
+  $('pFinal').value = pFinal.toFixed(pFinal%1===0?0:2);
+  showKPIs(costo,pFinal,iv);
+  renderEscala(costo,iv);
+}
+function showKPIs(costo,pf,iv){
+  const pSinIV = pf/(1+iv/100);
+  const montoIV = pf-pSinIV;
+  const gan = pSinIV-costo;
+  const margen = pSinIV>0 ? (gan/pSinIV)*100 : 0;
+  const pct = Math.min(Math.max(margen,0),100);
+  set('kGanancia', fmtM(gan), gan>=0?'lime':'rose');
+  set('kSinIV', fmtM(pSinIV), 'cyan');
+  set('kIV', fmtM(montoIV), 'rose');
+  set('kMargen', fmtP(margen), margen<0?'rose':margen<20?'amber':'lime');
+  $('kGanBar').style.width = pct+'%';
+  $('kGanBar').style.background = margen<0?'var(--rose)':margen<20?'var(--amber)':'var(--lime)';
+}
+function renderEscala(costo, iv){
+  const base = v('pMarkup');
+  const pts = [-30,-15,0,15,25,50,75,100,150,200];
+  let all = [...new Set([...pts, Math.round(base)])].sort((a,b)=>a-b);
+  let html='';
+  all.forEach(mk=>{
+    const pSinIV = costo*(1+mk/100);
+    let pFinal = pSinIV*(1+iv/100);
+    if($('chkRound').checked) pFinal = Math.ceil(pFinal/50)*50;
+    const gan = pSinIV-costo;
+    const marg = pSinIV>0?(gan/pSinIV)*100:0;
+    const isBE = mk===Math.round(base);
+    const col  = marg<0?'var(--rose)':marg<20?'var(--amber)':'var(--lime)';
+    html+=`<tr class="${isBE?'tr-hi':''}">
+      <td style="color:var(--silver)">${isBE?'<span class="badge b-cyan">▶ ACTUAL</span>':'—'}</td>
+      <td>${mk}%</td>
+      <td>${fmtM(pFinal)}</td>
+      <td>${fmtM(pSinIV)}</td>
+      <td style="color:${gan>=0?'var(--lime)':'var(--rose)'}">${fmtM(gan)}</td>
+      <td style="color:${col}">${fmtP(marg)}</td>
+      <td>${marg<0?'<span class="badge b-rose">PÉRDIDA</span>':marg<20?'<span class="badge b-amber">BAJO</span>':'<span class="badge b-lime">OK</span>'}</td>
+    </tr>`;
+  });
+  $('tbEscala').innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════════
+// TAB 2 — DESCUENTOS & PROMOS
+// ═══════════════════════════════════════════════════
+function calcDesc(src){
+  const orig=v('dOrig');
+  let pct_d, monto;
+  if(src==='amt'){
+    monto=v('dAmt'); pct_d = orig>0?(monto/orig)*100:0;
+    $('dPct').value=pct_d.toFixed(2);
+  } else {
+    pct_d=v('dPct'); monto=orig*(pct_d/100);
+    $('dAmt').value=monto.toFixed(2);
+  }
+  $('dRange').value=pct_d;
+  $('dRangeLbl').innerText=pct_d.toFixed(1)+'%';
+  const final=orig-monto;
+  set('dFinal', fmtM(final), 'cyan');
+  set('dAhorro', fmtM(monto), 'rose');
+  const n=$('dNotice');
+  if(pct_d>50){ n.className='notice bad'; n.innerText='⚠️ Descuento >50% — riesgo de pérdida.'; }
+  else if(pct_d>30){ n.className='notice warn'; n.innerText=`⚠️ Descuento agresivo (${pct_d.toFixed(1)}%). Verifica margen.`; }
+  else if(pct_d>0){ n.className='notice good'; n.innerText=`✅ Descuento razonable (${pct_d.toFixed(1)}%).`; }
+  else { n.className='notice'; n.innerText='Ingresa datos para ver análisis.'; }
+}
+function dRange(){
+  $('dPct').value=$('dRange').value;
+  calcDesc('pct');
+}
+function calcPM(){
+  const costo=v('pmCosto'), marg=v('pmMargen'), iv=v('pmIV');
+  if(!costo) return;
+  const pSinIV = costo/(1-marg/100);
+  const pFinal = pSinIV*(1+iv/100);
+  const mk = ((pSinIV-costo)/costo)*100;
+  set('pmRes', fmtM(pFinal), 'lime');
+  set('pmMk', fmtP(mk), 'violet');
+}
+function calcPromo(){
+  const precio=v('prPrecio'), costo=v('prCosto'), unid=v('prUnid')||1;
+  const desc=v('prDesc'), iv=v('prIV');
+  if(!precio||!costo) return;
+  const pSinIV = precio/(1+iv/100);
+  const ganUnit = pSinIV-costo;
+  const ganTotal = ganUnit*unid;
+  const pPromo = precio*(1-desc/100);
+  const pPromoSinIV = pPromo/(1+iv/100);
+  const ganPromoUnit = pPromoSinIV-costo;
+  const ganPromoTotal = ganPromoUnit*unid;
+  const unidNec = ganPromoUnit>0 ? ganTotal/ganPromoUnit : Infinity;
+  const incr = ((unidNec-unid)/unid)*100;
+  set('prGanAct', fmtM(ganTotal), 'amber');
+  set('prGanPromo', fmtM(ganPromoTotal), ganPromoTotal>=0?'lime':'rose');
+  set('prUnidNec', isFinite(unidNec)?Math.ceil(unidNec)+'':'∞', 'cyan');
+  set('prIncr', isFinite(incr)?fmtP(incr):'∞', incr>50?'rose':incr>20?'amber':'lime');
+  const n=$('promoNotice');
+  if(!isFinite(unidNec)){
+    n.className='notice bad'; n.innerText='⚠️ Descuento demasiado alto: precio de promo está por debajo del costo.';
+  } else if(incr>100){
+    n.className='notice warn'; n.innerText=`⚠️ Necesitas ${fmtP(incr)} más ventas para compensar — difícil de lograr.`;
+  } else {
+    n.className='notice good'; n.innerText=`✅ La promo es viable si logras vender ${Math.ceil(unidNec)} unidades (+${fmtP(incr)}).`;
+  }
+}
+function calcLote(){
+  const precio=v('lotePrecio'), costo=v('loteCosto'), iv=v('loteIV');
+  const unid=v('loteUnid')||1, descPct=v('lotePct');
+  const totalNormal = precio*unid;
+  const ahorro = totalNormal*(descPct/100);
+  const totalLote = totalNormal-ahorro;
+  const unitLote = totalLote/unid;
+  const unitSinIV = unitLote/(1+iv/100);
+  const gan = unitSinIV-costo;
+  const margen = unitSinIV>0?(gan/unitSinIV)*100:0;
+  set('lotePrecioTotal', fmtM(totalLote), 'lime');
+  set('lotePrecioUnit', fmtM(unitLote), 'cyan');
+  set('loteAhorro', fmtM(ahorro), 'amber');
+  set('loteMargen', fmtP(margen), margen<0?'rose':margen<20?'amber':'lime');
+}
+
+// ═══════════════════════════════════════════════════
+// TAB 3 — BREAK-EVEN
+// ═══════════════════════════════════════════════════
+function getBEData(){
+  return {
+    cf: v('beCF'), pv: v('bePV'), cv: v('beCV'),
+    iv: v('beIV'), com: v('beCom')
+  };
+}
+function calcBE(){
+  const d=getBEData();
+  if(!d.pv) return;
+  const pSinIV = d.pv/(1+d.iv/100);
+  const comUnit = d.pv*(d.com/100);
+  const mc = pSinIV-d.cv-comUnit;
+  if(mc<=0){ set('beUnid','Error','rose'); set('beVentas','Margen ≤ 0','rose'); return; }
+  const beUnid = d.cf/mc;
+  const beVentas = beUnid*d.pv;
+  set('beUnid', Math.ceil(beUnid)+'', 'amber');
+  set('beVentas', fmtM(beVentas), 'cyan');
+  set('beMCU', fmtM(mc), 'lime');
+  set('bePMC', fmtP(pSinIV>0?(mc/pSinIV)*100:0), 'violet');
+  calcOb(); renderTablaBE(d, mc);
+}
+function calcOb(){
+  const d=getBEData(); const u=v('obU');
+  if(!d.pv||!u) return;
+  const pSinIV=d.pv/(1+d.iv/100);
+  const comUnit=d.pv*(d.com/100);
+  const mc=pSinIV-d.cv-comUnit;
+  if(mc<=0) return;
+  const unidNec=(d.cf+u)/mc;
+  set('obUnid', Math.ceil(unidNec)+'', 'lime');
+  set('obVentas', fmtM(unidNec*d.pv), 'amber');
+  calcProy();
+}
+function calcProy(){
+  const d=getBEData(); const u=v('proyUnid');
+  if(!d.pv||!u) return;
+  const pSinIV=d.pv/(1+d.iv/100);
+  const comUnit=d.pv*(d.com/100);
+  const mc=pSinIV-d.cv-comUnit;
+  const util=(mc*u)-d.cf;
+  const costoTotal=d.cf+d.cv*u;
+  const roi=costoTotal>0?(util/costoTotal)*100:0;
+  set('proyUtil', fmtM(util), util>=0?'lime':'rose');
+  set('proyROI', fmtP(roi), roi>=0?'violet':'rose');
+  const n=$('proyNotice');
+  const be=d.cf/mc;
+  if(u>be*1.5){ n.className='notice good'; n.innerText=`✅ Excelente: estás ${fmt((u/be-1)*100,1)}% por encima del break-even.`; }
+  else if(u>be){ n.className='notice good'; n.innerText=`✅ Por encima del break-even. Utilidad positiva.`; }
+  else { n.className='notice bad'; n.innerText=`⚠️ Por debajo del break-even (necesitas ${Math.ceil(be)} uds.). Pérdida proyectada.`; }
+}
+function renderTablaBE(d, mc){
+  const be=d.cf/mc;
+  const pts=[0.25,0.5,0.75,1,1.25,1.5,2,3].map(f=>Math.ceil(be*f));
+  let html='';
+  pts.forEach(u=>{
+    const ing=u*d.pv;
+    const iv=ing*(d.iv/(100+d.iv));
+    const ingNet=ing-iv;
+    const costoT=d.cf+d.cv*u;
+    const util=mc*u-d.cf;
+    const isBE=Math.abs(u-Math.ceil(be))<2;
+    html+=`<tr class="${isBE?'tr-hi':''}">
+      <td>${fmt(u)}${isBE?' <span class="badge b-cyan">BE</span>':''}</td>
+      <td>${fmtM(ing)}</td>
+      <td>${fmtM(iv)}</td>
+      <td>${fmtM(ingNet)}</td>
+      <td>${fmtM(costoT)}</td>
+      <td style="color:${util>=0?'var(--lime)':'var(--rose)'}">${fmtM(util)}</td>
+      <td>${util>=0?'<span class="badge b-lime">GANANCIA</span>':'<span class="badge b-rose">PÉRDIDA</span>'}</td>
+    </tr>`;
+  });
+  $('tbBE').innerHTML=html;
+}
+
+// ═══════════════════════════════════════════════════
+// TAB 4 — INVENTARIO
+// ═══════════════════════════════════════════════════
+function calcRI(){
+  const cv=v('riCV'), ip=v('riIP'), per=v('riPer')||365;
+  if(!cv||!ip) return;
+  const rot=cv/ip;
+  const dias=per/rot;
+  set('riRot', fmt(rot,2)+'×', 'amber');
+  set('riDias', Math.round(dias)+' días', 'cyan');
+  const n=$('riNotice');
+  if(dias>90){ n.className='notice warn'; n.innerText=`⚠️ Inventario lento (${Math.round(dias)} días). Considera liquidar o reducir pedidos.`; }
+  else if(dias<15){ n.className='notice warn'; n.innerText=`⚠️ Rotación muy alta (${Math.round(dias)} días). Riesgo de desabasto.`; }
+  else { n.className='notice good'; n.innerText=`✅ Rotación saludable: inventario se renueva cada ~${Math.round(dias)} días.`; }
+}
+function calcROP(){
+  const dem=v('ropD'), lt=v('ropLT'), ss_dias=v('ropSS'), cu=v('ropCU');
+  if(!dem||!lt) return;
+  const ss=dem*ss_dias;
+  const rop=(dem*lt)+ss;
+  set('ropRes', Math.ceil(rop)+' uds.', 'lime');
+  set('ropSS2', Math.ceil(ss)+' uds.', 'violet');
+  set('ropInv', fmtM(rop*cu), 'amber');
+}
+function calcEOQ(){
+  const D=v('eoqD'), S=v('eoqO'), hPct=v('eoqH'), cu=v('eoqCU');
+  if(!D||!S||!cu) return;
+  const H=cu*(hPct/100);
+  const eoq=Math.sqrt((2*D*S)/H);
+  const ped=D/eoq;
+  const ct=(D*cu)+(D/eoq)*S+(eoq/2)*H;
+  const cada=365/ped;
+  set('eoqRes', Math.ceil(eoq)+' uds.', 'cyan');
+  set('eoqPed', fmt(ped,1), 'lime');
+  set('eoqCT', fmtM(ct), 'amber');
+  set('eoqCada', Math.round(cada)+' días', 'violet');
+}
+function calcLC(){
+  const c=v('lcCosto'), fl=v('lcFlete'), ad=v('lcAduana');
+  const merma=v('lcMerma'), otros=v('lcOtros'), unid=v('lcUnid')||1;
+  const base=c+fl+ad+otros;
+  const total=base/(1-merma/100);
+  const unit=total/unid;
+  const sobre=c>0?((total-c)/c)*100:0;
+  set('lcTotal', fmtM(total), 'lime');
+  set('lcUnit', fmtM(unit), 'cyan');
+  set('lcSobre', fmtP(sobre), sobre>20?'rose':'amber');
+}
+
+// ═══════════════════════════════════════════════════
+// TAB 5 — COMPARAR
+// ═══════════════════════════════════════════════════
+function addComp(){
+  compIdx++;
+  const id=compIdx;
+  const div=document.createElement('div');
+  div.className='comp-card'; div.id='cc'+id;
+  div.innerHTML=`<div class="comp-card-num">PRODUCTO ${id}</div>
+    <button class="btn btn-sm btn-ghost" style="position:absolute;top:8px;right:12px;font-size:0.65rem;" onclick="removeComp(${id})">✕ QUITAR</button>
+    <div class="g3" style="margin-top:10px;">
+      <div class="field"><label>Nombre / Descripción</label>
+        <div class="inp-wrap"><input type="text" id="ccN${id}" placeholder="Ej: Proveedor A" oninput="calcComp()" style="font-family:var(--sans)"></div></div>
+      <div class="field"><label>Costo (sin IV)</label>
+        <div class="inp-wrap"><div class="inp-pre">${SYM}</div><input type="number" id="ccC${id}" placeholder="0" oninput="calcComp()"></div></div>
+      <div class="field"><label>Precio venta (c/IV)</label>
+        <div class="inp-wrap"><div class="inp-pre">${SYM}</div><input type="number" id="ccP${id}" placeholder="0" oninput="calcComp()"></div></div>
+    </div>`;
+  $('compList').appendChild(div);
+  calcComp();
+}
+function removeComp(id){ const el=$('cc'+id); if(el) el.remove(); calcComp(); }
+function clearComps(){ $('compList').innerHTML=''; compIdx=0; $('compResCard').style.display='none'; }
+function calcComp(){
+  const iv=v('compIV');
+  const sort=vt('compSort');
+  let items=[];
+  for(let i=1;i<=compIdx;i++){
+    const n=$('ccN'+i), c=$('ccC'+i), p=$('ccP'+i);
+    if(!n||!p) continue;
+    const costo=parseFloat(c?.value)||0;
+    const precio=parseFloat(p?.value)||0;
+    if(!precio) continue;
+    const pSinIV=precio/(1+iv/100);
+    const gan=pSinIV-costo;
+    const mk=costo>0?((pSinIV-costo)/costo)*100:0;
+    const marg=pSinIV>0?(gan/pSinIV)*100:0;
+    items.push({i, nombre:n.value||('Producto '+i), costo, precio, pSinIV, gan, mk, marg});
+  }
+  if(!items.length){ $('compResCard').style.display='none'; return; }
+  items.sort((a,b)=>b[sort==='margen'?'marg':sort==='ganancia'?'gan':'mk'] - a[sort==='margen'?'marg':sort==='ganancia'?'gan':'mk']);
+  $('compResCard').style.display='block';
+  const best=items[0];
+  let html='';
+  items.forEach((p,idx)=>{
+    const isBest=idx===0;
+    html+=`<tr class="${isBest?'tr-hi':''}">
+      <td style="color:var(--fog)">${p.i}</td>
+      <td style="color:var(--snow);font-family:var(--sans)">${p.nombre}</td>
+      <td>${fmtM(p.costo)}</td>
+      <td>${fmtM(p.precio)}</td>
+      <td>${fmtM(p.pSinIV)}</td>
+      <td style="color:${p.gan>=0?'var(--lime)':'var(--rose)'}">${fmtM(p.gan)}</td>
+      <td>${fmtP(p.mk)}</td>
+      <td style="color:${p.marg<20?'var(--amber)':'var(--lime)'}">${fmtP(p.marg)}</td>
+      <td>${isBest?'<span class="badge b-lime">★ MEJOR</span>':''}</td>
+    </tr>`;
+  });
+  $('tbComp').innerHTML=html;
+  $('compWinner').innerHTML=`<div class="notice good">★ El producto más rentable es <strong>${best.nombre}</strong> con margen de ${fmtP(best.marg)} y ganancia de ${fmtM(best.gan)} por unidad.</div>`;
+}
+
+// ═══════════════════════════════════════════════════
+// TAB 6 — CAJA
+// ═══════════════════════════════════════════════════
+function calcCaja(){
+  const vtas=v('cajaVentas'), costo=v('cajaCosto');
+  const iv=v('cajaIV'), gastos=v('cajaGastos'), devol=v('cajaDevol');
+  const vSinIV=vtas/(1+iv/100);
+  const ivMonto=vtas-vSinIV;
+  const ganBruta=vSinIV-costo;
+  const efectivo=vtas-gastos-devol;
+  set('cajaSinIV', fmtM(vSinIV), 'lime');
+  set('cajaIVMonto', fmtM(ivMonto), 'rose');
+  set('cajaGanBruta', fmtM(ganBruta), ganBruta>=0?'amber':'rose');
+  set('cajaEfectivo', fmtM(efectivo), efectivo>=0?'cyan':'rose');
+}
+function convCRC(){
+  const crc=v('convCRC');
+  $('convUSD').value=(crc/TC).toFixed(2);
+}
+function convUSD(){
+  const usd=v('convUSD');
+  $('convCRC').value=(usd*TC).toFixed(0);
+}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+addComp(); addComp(); addComp(); // Start with 3 comparison slots
+</script>
+</body>
+</html>
