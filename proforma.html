@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Proforma — PAPAGAYO DO IT CENTER S.A.</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f6f9;
+    --surface: #ffffff;
+    --surface2: #f0f2f6;
+    --border: #dde1ea;
+    --border-light: #c8cdd8;
+    --accent: #4f46e5;
+    --accent2: #7c3aed;
+    --accent-glow: rgba(79,70,229,0.10);
+    --text: #1a1d2e;
+    --text-muted: #5a607a;
+    --text-dim: #9ca3af;
+    --success: #059669;
+    --danger: #dc2626;
+    --warning: #d97706;
+    --mono: 'DM Mono', monospace;
+    --sans: 'DM Sans', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--sans);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.5;
+  }
+
+  /* ── HEADER ── */
+  .app-header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 60px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 1px 8px rgba(0,0,0,.07);
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: .6rem;
+    font-weight: 700;
+    font-size: 1rem;
+    letter-spacing: -.02em;
+    color: var(--text);
+  }
+  .logo-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    box-shadow: 0 0 10px var(--accent);
+  }
+  .header-actions { display: flex; gap: .6rem; }
+
+  /* ── BUTTONS ── */
+  .btn {
+    font-family: var(--sans);
+    font-size: .82rem;
+    font-weight: 600;
+    padding: .5rem 1.1rem;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    transition: all .18s ease;
+    letter-spacing: .01em;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    color: #fff;
+    box-shadow: 0 2px 16px rgba(124,106,247,.35);
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 24px rgba(124,106,247,.5); }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { background: var(--surface2); color: var(--text); border-color: var(--border-light); }
+  .btn-danger-ghost {
+    background: transparent;
+    color: var(--danger);
+    border: none;
+    padding: .3rem .5rem;
+    border-radius: 6px;
+    font-size: .8rem;
+  }
+  .btn-danger-ghost:hover { background: rgba(248,113,113,.12); }
+  .btn-add {
+    background: rgba(79,70,229,.07);
+    color: var(--accent);
+    border: 1px dashed rgba(79,70,229,.35);
+    font-size: .8rem;
+    padding: .4rem .9rem;
+  }
+  .btn-add:hover { background: rgba(79,70,229,.14); border-color: var(--accent); }
+
+  /* ── MAIN LAYOUT ── */
+  .main { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+
+  /* ── SECTION CARD ── */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 1.5rem;
+    margin-bottom: 1.2rem;
+    box-shadow: 0 1px 6px rgba(0,0,0,.05);
+  }
+  .card-title {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--text-dim);
+    margin-bottom: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: .5rem;
+  }
+  .card-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* ── FORM GRID ── */
+  .form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; }
+  .form-group { display: flex; flex-direction: column; gap: .35rem; }
+  .form-group label {
+    font-size: .75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: .04em;
+    text-transform: uppercase;
+  }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    font-family: var(--sans);
+    font-size: .88rem;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: .6rem .85rem;
+    color: var(--text);
+    transition: border-color .18s, box-shadow .18s;
+    outline: none;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-glow);
+  }
+  .form-group input::placeholder,
+  .form-group textarea::placeholder { color: var(--text-dim); }
+  .form-group select option { background: var(--surface2); }
+
+  /* ── ITEMS TABLE ── */
+  .table-wrap { overflow-x: auto; }
+  table.items-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: .84rem;
+  }
+  .items-table thead tr {
+    background: var(--surface2);
+  }
+  .items-table th {
+    padding: .6rem .75rem;
+    text-align: left;
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border);
+  }
+  .items-table th:first-child { border-radius: 8px 0 0 0; }
+  .items-table th:last-child { border-radius: 0 8px 0 0; }
+  .items-table tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background .12s;
+  }
+  .items-table tbody tr:hover { background: rgba(79,70,229,.03); }
+  .items-table td { padding: .45rem .55rem; vertical-align: middle; }
+  .items-table td input {
+    font-family: var(--mono);
+    font-size: .82rem;
+    background: transparent;
+    border: 1px solid transparent;
+    border-radius: 6px;
+    padding: .35rem .5rem;
+    color: var(--text);
+    width: 100%;
+    outline: none;
+    transition: all .15s;
+  }
+  .items-table td input:focus {
+    background: var(--surface2);
+    border-color: var(--accent);
+    box-shadow: 0 0 0 2px var(--accent-glow);
+  }
+  .items-table td input.text-right { text-align: right; }
+  .items-table td input::placeholder { color: var(--text-dim); }
+  .col-code { width: 100px; }
+  .col-desc { min-width: 200px; }
+  .col-qty  { width: 80px; }
+  .col-price{ width: 130px; }
+  .col-disc { width: 90px; }
+  .col-tax  { width: 90px; }
+  .col-total{ width: 130px; }
+  .col-del  { width: 40px; }
+
+  .td-total {
+    font-family: var(--mono);
+    font-size: .82rem;
+    color: var(--success);
+    text-align: right;
+    padding-right: .75rem;
+    font-weight: 600;
+  }
+
+  /* ── TOTALS ── */
+  .totals-section {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: .5rem;
+  }
+  .totals-box {
+    min-width: 300px;
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 1.1rem 1.3rem;
+  }
+  .total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: .35rem 0;
+    font-size: .85rem;
+  }
+  .total-row .label { color: var(--text-muted); }
+  .total-row .value { font-family: var(--mono); color: var(--text); }
+  .total-row.discount .value { color: var(--warning); }
+  .total-row.tax .value { color: var(--accent2); }
+  .total-row.grand {
+    border-top: 1px solid var(--border-light);
+    margin-top: .4rem;
+    padding-top: .7rem;
+    font-weight: 700;
+    font-size: 1rem;
+  }
+  .total-row.grand .value { color: var(--success); font-size: 1.1rem; }
+
+  /* ── NOTES ── */
+  .notes-area textarea { resize: vertical; min-height: 70px; }
+
+  /* ── STATUS BAR ── */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: .7rem 1.2rem;
+    background: #fff;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    margin-bottom: 1.2rem;
+    font-size: .8rem;
+    box-shadow: 0 1px 4px rgba(0,0,0,.04);
+  }
+  .status-pill {
+    padding: .25rem .7rem;
+    border-radius: 20px;
+    font-weight: 700;
+    font-size: .72rem;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    background: rgba(217,119,6,.1);
+    color: var(--warning);
+    border: 1px solid rgba(217,119,6,.25);
+  }
+  .status-meta { color: var(--text-muted); margin-left: auto; }
+
+  /* ── PRINT STYLES ── */
+  @media print {
+    @page {
+      size: A4;
+      margin: 14mm 16mm 14mm 16mm;
+    }
+
+    body {
+      background: #fff !important;
+      color: #111 !important;
+      font-family: 'DM Sans', Arial, sans-serif;
+      font-size: 9.5pt;
+    }
+
+    .app-header,
+    .header-actions,
+    .no-print,
+    .status-bar,
+    .btn,
+    .btn-add,
+    .btn-danger-ghost,
+    .col-del,
+    td.col-del,
+    th.col-del { display: none !important; }
+
+    .main { max-width: 100%; padding: 0; margin: 0; }
+
+    .card {
+      background: #fff !important;
+      border: none !important;
+      border-radius: 0;
+      padding: 0;
+      margin-bottom: 0;
+      box-shadow: none;
+    }
+
+    /* ── PRINT: Company header ── */
+    #print-header {
+      display: flex !important;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10pt;
+      padding-bottom: 8pt;
+      border-bottom: 1.5pt solid #111;
+    }
+    #print-header .company-block h1 {
+      font-size: 14pt;
+      font-weight: 800;
+      letter-spacing: -.01em;
+      color: #111;
+      margin-bottom: 1pt;
+    }
+    #print-header .company-block p {
+      font-size: 8.5pt;
+      color: #444;
+    }
+    #print-header .doc-meta {
+      text-align: right;
+      font-size: 8.5pt;
+      color: #444;
+      line-height: 1.6;
+    }
+    #print-header .doc-meta strong {
+      font-size: 10pt;
+      color: #111;
+      display: block;
+    }
+
+    /* ── PRINT: Client block ── */
+    #print-client-block {
+      display: grid !important;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 2rem;
+      margin-bottom: 10pt;
+      padding-bottom: 8pt;
+      border-bottom: .5pt solid #ccc;
+    }
+    #print-client-block .info-row {
+      display: flex;
+      gap: .4rem;
+      font-size: 8.8pt;
+      padding: 2pt 0;
+    }
+    #print-client-block .info-row .lbl {
+      font-weight: 700;
+      color: #333;
+      min-width: 70pt;
+    }
+    #print-client-block .info-row .val { color: #111; }
+
+    /* ── PRINT: Items table ── */
+    .items-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 8pt;
+      font-size: 8.5pt;
+    }
+    .items-table thead tr { background: #f0f0f0 !important; }
+    .items-table th {
+      padding: 4pt 5pt;
+      font-size: 7.5pt;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: #333;
+      border-top: 1pt solid #bbb;
+      border-bottom: 1pt solid #bbb;
+    }
+    .items-table td {
+      padding: 4pt 5pt;
+      border-bottom: .4pt solid #ddd;
+      color: #111;
+    }
+    .items-table td input {
+      border: none !important;
+      background: transparent !important;
+      box-shadow: none !important;
+      font-size: 8.5pt;
+      color: #111 !important;
+      padding: 0 !important;
+      font-family: 'DM Mono', monospace;
+    }
+    .td-total { color: #111 !important; }
+
+    /* ── PRINT: Totals ── */
+    .totals-section { justify-content: flex-end; }
+    .totals-box {
+      background: #f9f9f9 !important;
+      border: .8pt solid #ccc !important;
+      border-radius: 4pt !important;
+      min-width: 180pt;
+      padding: 6pt 10pt !important;
+    }
+    .total-row .label { color: #444 !important; font-size: 8.5pt; }
+    .total-row .value { color: #111 !important; font-size: 8.5pt; }
+    .total-row.grand .value { color: #111 !important; font-size: 10pt; }
+    .total-row.discount .value { color: #555 !important; }
+    .total-row.tax .value { color: #555 !important; }
+
+    /* ── PRINT: Notes ── */
+    #print-notes-block {
+      display: block !important;
+      margin-top: 8pt;
+      font-size: 8pt;
+      color: #444;
+      border-top: .5pt solid #ccc;
+      padding-top: 5pt;
+    }
+
+    /* ── PRINT: Footer ── */
+    #print-footer {
+      display: flex !important;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-top: 20pt;
+      padding-top: 8pt;
+      border-top: .5pt solid #bbb;
+      font-size: 7.5pt;
+      color: #777;
+    }
+
+    #print-footer .signature-line {
+      text-align: center;
+    }
+    #print-footer .signature-line .line {
+      width: 120pt;
+      border-top: .8pt solid #333;
+      margin-bottom: 3pt;
+    }
+
+    /* hide screen-only form labels inside print */
+    .card-title { display: none !important; }
+    .form-grid { display: grid !important; }
+    .form-group label { color: #666; font-size: 7pt; }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      background: transparent !important;
+      border: none !important;
+      border-bottom: .5pt solid #ccc !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      color: #111 !important;
+      padding: 1pt 0 !important;
+      font-size: 8.8pt;
+    }
+    #section-header-info { display: none !important; }
+    #section-items .card { padding: 0 !important; }
+    #section-totals .card { padding: 0 !important; }
+    #section-notes .card { padding: 0 !important; }
+    #section-notes .notes-area textarea {
+      border: none !important;
+      padding: 0 !important;
+    }
+  }
+
+  /* hide print-only elements on screen */
+  #print-header,
+  #print-client-block,
+  #print-notes-block,
+  #print-footer { display: none; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 700px) {
+    .app-header { padding: 0 1rem; }
+    .main { padding: 1rem; }
+    .form-grid { grid-template-columns: 1fr; }
+    .totals-box { min-width: unset; width: 100%; }
+    .totals-section { justify-content: stretch; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── APP HEADER ── -->
+<header class="app-header">
+  <div class="logo">
+    <div class="logo-dot"></div>
+    Proforma MANUAL
+  </div>
+  <div class="header-actions">
+    <button class="btn btn-ghost no-print" onclick="clearForm()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M3 6h18M8 6V4h8v2M19 6l-1 14H6L5 6"/></svg>
+      Limpiar
+    </button>
+    <button class="btn btn-primary no-print" onclick="window.print()">
+      <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M6 9V2h12v7M6 18H4a2 2 0 01-2-2v-5a2 2 0 012-2h16a2 2 0 012 2v5a2 2 0 01-2 2h-2"/><rect x="6" y="14" width="12" height="8" rx="1"/></svg>
+      Imprimir / PDF
+    </button>
+  </div>
+</header>
+
+<!-- ── PRINT HEADER (only visible when printing) ── -->
+<div id="print-header">
+  <div class="company-block">
+    <h1 id="ph-company">PAPAGAYO DO IT CENTER S.A.</h1>
+    <p id="ph-cedula">Cédula: 3-101-338102</p>
+    <p style="margin-top:3pt;font-weight:700;font-size:10pt;">PROFORMA / PREVENTA</p>
+  </div>
+  <div class="doc-meta">
+    <strong id="ph-num">N° <span id="ph-num-val"></span></strong>
+    <span id="ph-date-val"></span><br>
+    Tipo: <span id="ph-tipo-val"></span>
+  </div>
+</div>
+
+<!-- ── PRINT CLIENT BLOCK ── -->
+<div id="print-client-block">
+  <div>
+    <div class="info-row"><span class="lbl">Cliente:</span><span class="val" id="ph-client"></span></div>
+    <div class="info-row"><span class="lbl">Vendedor:</span><span class="val" id="ph-seller"></span></div>
+  </div>
+  <div>
+    <div class="info-row"><span class="lbl">Fecha:</span><span class="val" id="ph-date2"></span></div>
+    <div class="info-row"><span class="lbl">Vence:</span><span class="val" id="ph-exp"></span></div>
+    <div class="info-row"><span class="lbl">Moneda:</span><span class="val" id="ph-currency"></span></div>
+  </div>
+</div>
+
+<!-- ── MAIN ── -->
+<main class="main">
+
+  <!-- Status bar -->
+  <div class="status-bar no-print">
+    <span class="status-pill">Borrador</span>
+    <span>Nueva Proforma</span>
+    <span class="status-meta" id="bar-date"></span>
+  </div>
+
+  <!-- ── SECTION 1: Info general ── -->
+  <div id="section-header-info" class="card no-print">
+    <div class="card-title">Información del documento</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>N° Proforma</label>
+        <input type="text" id="f-num" placeholder="Ej: PRO-001" oninput="syncPrint()">
+      </div>
+      <div class="form-group">
+        <label>Fecha</label>
+        <input type="date" id="f-date" oninput="syncPrint()">
+      </div>
+      <div class="form-group">
+        <label>Fecha de vencimiento</label>
+        <input type="date" id="f-exp" oninput="syncPrint()">
+      </div>
+      <div class="form-group">
+        <label>Tipo</label>
+        <select id="f-tipo" onchange="syncPrint()">
+          <option value="Contado">Contado</option>
+          <option value="Crédito">Crédito</option>
+          <option value="Mixto">Mixto</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <label>Moneda</label>
+        <select id="f-currency" onchange="syncPrint(); recalc()">
+          <option value="₡ CRC">₡ Colones (CRC)</option>
+          <option value="$ USD">$ Dólares (USD)</option>
+          <option value="€ EUR">€ Euros (EUR)</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 2: Cliente & Vendedor ── -->
+  <div class="card">
+    <div class="card-title no-print">Cliente &amp; Vendedor</div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label>Nombre del Cliente</label>
+        <input type="text" id="f-client" placeholder="Razón social o nombre completo" oninput="syncPrint()">
+      </div>
+      <div class="form-group">
+        <label>Cédula / RUC Cliente</label>
+        <input type="text" id="f-client-id" placeholder="3-101-000000" oninput="syncPrint()">
+      </div>
+      <div class="form-group">
+        <label>Vendedor</label>
+        <input type="text" id="f-seller" placeholder="Nombre del vendedor" oninput="syncPrint()">
+      </div>
+      <div class="form-group">
+        <label>Teléfono / Email cliente</label>
+        <input type="text" id="f-contact" placeholder="Tel / correo" oninput="syncPrint()">
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 3: Items ── -->
+  <div id="section-items" class="card">
+    <div class="card-title no-print">Líneas de artículos</div>
+    <div class="table-wrap">
+      <table class="items-table" id="items-table">
+        <thead>
+          <tr>
+            <th class="col-code">Código</th>
+            <th class="col-desc">Descripción</th>
+            <th class="col-qty" style="text-align:right">Cant.</th>
+            <th class="col-price" style="text-align:right">P. Unit. S/Imp.</th>
+            <th class="col-disc" style="text-align:right">Desc. %</th>
+            <th class="col-tax" style="text-align:right">Imp. %</th>
+            <th class="col-total" style="text-align:right">Total Línea</th>
+            <th class="col-del no-print"></th>
+          </tr>
+        </thead>
+        <tbody id="items-body">
+          <!-- rows injected by JS -->
+        </tbody>
+      </table>
+    </div>
+    <div style="margin-top:.9rem;" class="no-print">
+      <button class="btn btn-add" onclick="addRow()">
+        <svg width="13" height="13" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>
+        Agregar artículo
+      </button>
+    </div>
+  </div>
+
+  <!-- ── SECTION 4: Totales ── -->
+  <div id="section-totals" class="card">
+    <div class="card-title no-print">Resumen de totales</div>
+    <div class="totals-section">
+      <div class="totals-box">
+        <div class="total-row">
+          <span class="label">Subtotal sin impuesto</span>
+          <span class="value" id="t-subtotal">₡ 0.00</span>
+        </div>
+        <div class="total-row discount">
+          <span class="label">Descuento total</span>
+          <span class="value" id="t-discount">- ₡ 0.00</span>
+        </div>
+        <div class="total-row">
+          <span class="label">Base gravable</span>
+          <span class="value" id="t-base">₡ 0.00</span>
+        </div>
+        <div class="total-row tax">
+          <span class="label">Impuesto (IVA)</span>
+          <span class="value" id="t-tax">₡ 0.00</span>
+        </div>
+        <div class="total-row">
+          <span class="label">Servicio</span>
+          <span class="value" id="t-service">₡ 0.00</span>
+        </div>
+        <div class="total-row grand">
+          <span class="label">TOTAL</span>
+          <span class="value" id="t-total">₡ 0.00</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── SECTION 5: Notas ── -->
+  <div id="section-notes" class="card notes-area">
+    <div class="card-title no-print">Notas &amp; condiciones</div>
+    <div class="form-group">
+      <label class="no-print">Nota / Términos y condiciones</label>
+      <textarea id="f-notes" placeholder="Ej: Precios sujetos a cambio. Validez de la oferta: 30 días." oninput="syncPrint()"></textarea>
+    </div>
+  </div>
+
+</main>
+
+<!-- ── PRINT NOTES ── -->
+<div id="print-notes-block">
+  <strong>Nota:</strong> <span id="ph-notes"></span>
+</div>
+
+<!-- ── PRINT FOOTER ── -->
+<div id="print-footer">
+  <div>
+    <div style="font-size:7pt;color:#aaa;">Total líneas: <span id="ph-lines"></span></div>
+    <div style="font-size:7pt;color:#aaa;">Total peso: 0.00 (KLG)</div>
+  </div>
+  <div class="signature-line">
+    <div class="line"></div>
+    <div>Firma del Cliente</div>
+    <div id="ph-client2" style="margin-top:2pt;"></div>
+  </div>
+  <div class="signature-line">
+    <div class="line"></div>
+    <div>Vendedor</div>
+    <div id="ph-seller2" style="margin-top:2pt;"></div>
+  </div>
+</div>
+
+<script>
+/* ───────────────────────────────────────────────────
+   STATE
+──────────────────────────────────────────────────── */
+let rows = [];
+let rowIdCounter = 0;
+
+/* ───────────────────────────────────────────────────
+   INIT
+──────────────────────────────────────────────────── */
+function init() {
+  // Set today's date
+  const today = new Date();
+  const fmt = d => d.toISOString().split('T')[0];
+  document.getElementById('f-date').value = fmt(today);
+  const exp = new Date(today);
+  exp.setDate(exp.getDate() + 30);
+  document.getElementById('f-exp').value = fmt(exp);
+
+  // Status bar date
+  document.getElementById('bar-date').textContent =
+    today.toLocaleDateString('es-CR', { weekday:'long', year:'numeric', month:'long', day:'numeric' });
+
+  // Auto number
+  document.getElementById('f-num').value = 'PRO-' + String(Math.floor(Math.random()*900)+100);
+
+  // Add 3 empty rows
+  addRow(); addRow(); addRow();
+  syncPrint();
+}
+
+/* ───────────────────────────────────────────────────
+   ROW MANAGEMENT
+──────────────────────────────────────────────────── */
+function addRow() {
+  const id = ++rowIdCounter;
+  rows.push({ id, code:'', desc:'', qty:1, price:0, disc:0, tax:13, lineTotal:0 });
+  renderRows();
+}
+
+function removeRow(id) {
+  rows = rows.filter(r => r.id !== id);
+  renderRows();
+  recalc();
+}
+
+function renderRows() {
+  const tbody = document.getElementById('items-body');
+  tbody.innerHTML = '';
+  rows.forEach(row => {
+    const tr = document.createElement('tr');
+    tr.id = 'row-' + row.id;
+    tr.innerHTML = `
+      <td class="col-code"><input type="text" value="${esc(row.code)}" placeholder="3129037" oninput="updateRow(${row.id},'code',this.value)"></td>
+      <td class="col-desc"><input type="text" value="${esc(row.desc)}" placeholder="Descripción del artículo" oninput="updateRow(${row.id},'desc',this.value)"></td>
+      <td class="col-qty"><input type="number" class="text-right" value="${row.qty}" min="0" step="any" oninput="updateRow(${row.id},'qty',this.value)"></td>
+      <td class="col-price"><input type="number" class="text-right" value="${row.price}" min="0" step="any" placeholder="0.00" oninput="updateRow(${row.id},'price',this.value)"></td>
+      <td class="col-disc"><input type="number" class="text-right" value="${row.disc}" min="0" max="100" step="any" oninput="updateRow(${row.id},'disc',this.value)"></td>
+      <td class="col-tax"><input type="number" class="text-right" value="${row.tax}" min="0" max="100" step="any" oninput="updateRow(${row.id},'tax',this.value)"></td>
+      <td class="td-total col-total" id="lt-${row.id}">${formatMoney(row.lineTotal)}</td>
+      <td class="col-del no-print"><button class="btn btn-danger-ghost" onclick="removeRow(${row.id})" title="Eliminar">✕</button></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function updateRow(id, field, val) {
+  const row = rows.find(r => r.id === id);
+  if (!row) return;
+  if (['qty','price','disc','tax'].includes(field)) row[field] = parseFloat(val) || 0;
+  else row[field] = val;
+  const lineBase = row.qty * row.price;
+  const lineDisc = lineBase * (row.disc / 100);
+  const lineNet  = lineBase - lineDisc;
+  const lineTax  = lineNet  * (row.tax  / 100);
+  row.lineTotal  = lineNet + lineTax;
+  const cell = document.getElementById('lt-' + id);
+  if (cell) cell.textContent = formatMoney(row.lineTotal);
+  recalc();
+}
+
+/* ───────────────────────────────────────────────────
+   RECALC TOTALS
+──────────────────────────────────────────────────── */
+function recalc() {
+  const sym = currSymbol();
+  let subtotal = 0, totalDisc = 0, totalTax = 0;
+  rows.forEach(row => {
+    const lineBase = row.qty * row.price;
+    const lineDisc = lineBase * (row.disc / 100);
+    const lineNet  = lineBase - lineDisc;
+    const lineTax  = lineNet  * (row.tax  / 100);
+    subtotal  += lineBase;
+    totalDisc += lineDisc;
+    totalTax  += lineTax;
+  });
+  const base  = subtotal - totalDisc;
+  const total = base + totalTax;
+
+  document.getElementById('t-subtotal').textContent = sym + fmt(subtotal);
+  document.getElementById('t-discount').textContent = '- ' + sym + fmt(totalDisc);
+  document.getElementById('t-base').textContent     = sym + fmt(base);
+  document.getElementById('t-tax').textContent      = sym + fmt(totalTax);
+  document.getElementById('t-service').textContent  = sym + '0.00';
+  document.getElementById('t-total').textContent    = sym + fmt(total);
+  syncPrint();
+}
+
+function currSymbol() {
+  const v = document.getElementById('f-currency').value;
+  if (v.startsWith('$')) return '$ ';
+  if (v.startsWith('€')) return '€ ';
+  return '₡ ';
+}
+
+function fmt(n) {
+  return n.toLocaleString('es-CR', { minimumFractionDigits:2, maximumFractionDigits:2 });
+}
+function formatMoney(n) {
+  return currSymbol() + fmt(n);
+}
+
+/* ───────────────────────────────────────────────────
+   SYNC PRINT ELEMENTS
+──────────────────────────────────────────────────── */
+function syncPrint() {
+  const g = id => document.getElementById(id);
+  g('ph-num-val').textContent  = g('f-num').value   || '—';
+  g('ph-date-val').textContent = g('f-date').value  || '—';
+  g('ph-tipo-val').textContent = g('f-tipo').value  || '—';
+  g('ph-client').textContent   = g('f-client').value  || '—';
+  g('ph-seller').textContent   = g('f-seller').value  || '—';
+  g('ph-date2').textContent    = g('f-date').value  || '—';
+  g('ph-exp').textContent      = g('f-exp').value   || '—';
+  g('ph-currency').textContent = g('f-currency').value || '—';
+  g('ph-notes').textContent    = g('f-notes').value || 'Precios sujetos a cambio.';
+  g('ph-lines').textContent    = rows.length;
+  g('ph-client2').textContent  = g('f-client').value  || '';
+  g('ph-seller2').textContent  = g('f-seller').value  || '';
+}
+
+/* ───────────────────────────────────────────────────
+   CLEAR FORM
+──────────────────────────────────────────────────── */
+function clearForm() {
+  if (!confirm('¿Limpiar todo el formulario?')) return;
+  ['f-client','f-client-id','f-seller','f-contact','f-notes'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  document.getElementById('f-num').value = 'PRO-' + String(Math.floor(Math.random()*900)+100);
+  rows = []; rowIdCounter = 0;
+  addRow(); addRow(); addRow();
+  recalc();
+}
+
+/* ───────────────────────────────────────────────────
+   UTILS
+──────────────────────────────────────────────────── */
+function esc(s) {
+  return String(s).replace(/"/g,'&quot;').replace(/</g,'&lt;');
+}
+
+init();
+</script>
+</body>
+</html>
