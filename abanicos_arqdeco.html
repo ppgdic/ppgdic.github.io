@@ -1,0 +1,815 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ARQDECO · Catálogo de Abanicos</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f1ed;
+    --surface: #ffffff;
+    --surface2: #f9f7f4;
+    --border: #e0d9d0;
+    --accent: #8b5e2a;
+    --accent2: #b07d3e;
+    --text: #1a1410;
+    --text-muted: #8a7d6e;
+    --interior: #1a6fd4;
+    --exterior: #2a9d5c;
+    --red: #c0392b;
+    --tag-bg: #f0ece6;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* HEADER */
+  header {
+    background: linear-gradient(180deg, #f4f1ed 0%, rgba(244,241,237,0.9) 100%);
+    padding: 40px 40px 24px;
+    position: sticky; top: 0; z-index: 100;
+    backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--border);
+  }
+  .header-inner {
+    max-width: 1600px; margin: auto;
+    display: flex; align-items: center; gap: 32px; flex-wrap: wrap;
+  }
+  .brand {
+    display: flex; align-items: center; gap: 14px;
+  }
+  .brand-icon {
+    width: 44px; height: 44px;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border-radius: 12px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px;
+  }
+  .brand-text h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px; font-weight: 700;
+    color: var(--accent);
+    letter-spacing: 2px;
+  }
+  .brand-text span {
+    font-size: 11px; color: var(--text-muted);
+    letter-spacing: 3px; text-transform: uppercase;
+  }
+
+  /* SEARCH BAR */
+  .search-wrap {
+    flex: 1; min-width: 260px; max-width: 480px;
+  }
+  .search-wrap input {
+    width: 100%;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 11px 18px 11px 44px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    outline: none;
+    transition: border-color .2s, box-shadow .2s;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%238a7d6e' stroke-width='2'%3E%3Ccircle cx='11' cy='11' r='8'/%3E%3Cpath d='m21 21-4.35-4.35'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: 14px center;
+  }
+  .search-wrap input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(201,169,110,.12);
+  }
+  .search-wrap input::placeholder { color: var(--text-muted); }
+
+  /* STATS */
+  .stats {
+    margin-left: auto;
+    display: flex; gap: 24px; align-items: center;
+  }
+  .stat { text-align: center; }
+  .stat-num {
+    font-family: 'Playfair Display', serif;
+    font-size: 24px; color: var(--accent); font-weight: 700;
+    line-height: 1;
+  }
+  .stat-label { font-size: 11px; color: var(--text-muted); letter-spacing: 1px; text-transform: uppercase; }
+
+  /* FILTERS PANEL */
+  .filters-bar {
+    background: #ffffff;
+    border-bottom: 1px solid var(--border);
+    padding: 16px 40px;
+  }
+  .filters-inner {
+    max-width: 1600px; margin: auto;
+    display: flex; gap: 12px; flex-wrap: wrap; align-items: center;
+  }
+  .filter-group {
+    display: flex; flex-direction: column; gap: 4px;
+  }
+  .filter-label {
+    font-size: 10px; color: var(--text-muted);
+    letter-spacing: 2px; text-transform: uppercase;
+    font-weight: 600;
+  }
+  .filter-group select, .filter-group input[type="number"] {
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 12px;
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    outline: none;
+    cursor: pointer;
+    transition: border-color .2s;
+    min-width: 120px;
+  }
+  .filter-group select:focus, .filter-group input[type="number"]:focus {
+    border-color: var(--accent);
+  }
+  .filter-group select option { background: #ffffff; color: #1a1410; }
+
+  /* CFM RANGE */
+  .cfm-range {
+    display: flex; gap: 6px; align-items: center;
+  }
+  .cfm-range input { width: 90px; }
+  .cfm-range span { color: var(--text-muted); font-size: 12px; }
+
+  /* TOGGLE FILTERS (pills) */
+  .pill-group { display: flex; gap: 6px; flex-wrap: wrap; }
+  .pill {
+    padding: 7px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all .2s;
+    background: var(--surface2);
+    color: var(--text-muted);
+    white-space: nowrap;
+  }
+  .pill:hover { border-color: var(--accent); color: var(--text); }
+  .pill.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #111;
+    font-weight: 600;
+  }
+  .pill.pill-int.active { background: var(--interior); border-color: var(--interior); color: #fff; }
+  .pill.pill-ext.active { background: var(--exterior); border-color: var(--exterior); color: #111; }
+
+  /* SORT BAR */
+  .sort-bar {
+    max-width: 1600px; margin: auto;
+    padding: 14px 40px;
+    display: flex; gap: 10px; align-items: center; flex-wrap: wrap;
+  }
+  .sort-label { font-size: 12px; color: var(--text-muted); letter-spacing: 1px; }
+  .sort-btn {
+    padding: 6px 14px;
+    border-radius: 8px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--text-muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 12px;
+    cursor: pointer;
+    transition: all .2s;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .sort-btn:hover { border-color: var(--accent); color: var(--text); }
+  .sort-btn.active { border-color: var(--accent); color: var(--accent); font-weight: 600; }
+  .sort-arrow { font-size: 10px; }
+  .results-count {
+    margin-left: auto;
+    font-size: 12px;
+    color: var(--text-muted);
+  }
+  .results-count strong { color: var(--accent); }
+
+  /* MAIN GRID */
+  main {
+    max-width: 1600px; margin: auto;
+    padding: 0 40px 60px;
+  }
+  #grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 20px;
+    margin-top: 4px;
+  }
+
+  /* CARD */
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform .25s, border-color .25s, box-shadow .25s;
+    cursor: default;
+    position: relative;
+  }
+  .card:hover {
+    transform: translateY(-4px);
+    border-color: #c8bfb0;
+    box-shadow: 0 20px 60px rgba(0,0,0,.12);
+  }
+
+  /* PRODUCT IMAGE */
+  .card-img {
+    width: 100%;
+    height: 190px;
+    overflow: hidden;
+    background: #faf8f5;
+    border-bottom: 1px solid var(--border);
+    position: relative;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .card-img img {
+    max-width: 100%; max-height: 100%;
+    width: auto; height: 100%;
+    object-fit: contain;
+    padding: 10px;
+    transition: transform .4s ease;
+  }
+  .card:hover .card-img img { transform: scale(1.06); }
+  .card-img-placeholder {
+    width: 100%; height: 100%;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    color: #d0c8be; gap: 8px;
+    font-size: 48px;
+  }
+  .card-img-placeholder span {
+    font-size: 10px; letter-spacing: 1.5px; text-transform: uppercase;
+    color: #c8c0b5; font-family: 'DM Sans', sans-serif;
+  }
+  .img-badge {
+    position: absolute; bottom: 8px; right: 8px;
+    font-size: 9px; background: rgba(255,255,255,0.9);
+    color: #a09080; padding: 2px 7px; border-radius: 10px;
+    letter-spacing: 0.5px; border: 1px solid var(--border);
+    font-family: 'DM Sans', sans-serif;
+  }
+
+  .card-header {
+    padding: 14px 20px 12px;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    border-bottom: 1px solid var(--border);
+  }
+  .card-title { 
+    font-family: 'Playfair Display', serif;
+    font-size: 16px; font-weight: 600;
+    color: var(--text); line-height: 1.3;
+    max-width: 200px;
+  }
+  .card-subtitle {
+    font-size: 11px; color: var(--text-muted);
+    letter-spacing: 1px; text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .loc-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 10px; font-weight: 700;
+    letter-spacing: 1.5px; text-transform: uppercase;
+    flex-shrink: 0;
+  }
+  .loc-int { background: rgba(26,111,212,.1); color: var(--interior); border: 1px solid rgba(26,111,212,.25); }
+  .loc-ext { background: rgba(42,157,92,.1); color: var(--exterior); border: 1px solid rgba(42,157,92,.25); }
+
+  .card-body { padding: 16px 20px; }
+
+  /* CFM VISUAL */
+  .cfm-section { margin-bottom: 14px; }
+  .cfm-title { font-size: 10px; color: var(--text-muted); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 8px; }
+  .cfm-bars { display: flex; gap: 6px; align-items: flex-end; height: 40px; }
+  .cfm-bar-wrap { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 3px; }
+  .cfm-bar {
+    width: 100%;
+    border-radius: 4px 4px 0 0;
+    transition: height .5s ease;
+    min-height: 3px;
+  }
+  .bar-bajo { background: linear-gradient(180deg, #1a6fd488, #1a6fd422); border: 1px solid #1a6fd455; }
+  .bar-medio { background: linear-gradient(180deg, #8b5e2a88, #8b5e2a22); border: 1px solid #8b5e2a55; }
+  .bar-alto { background: linear-gradient(180deg, #2a9d5c88, #2a9d5c22); border: 1px solid #2a9d5c55; }
+  .cfm-val { font-size: 10px; color: var(--text-muted); }
+  .cfm-spd { font-size: 9px; color: #555; letter-spacing: 0.5px; text-transform: uppercase; }
+  .cfm-na { font-size: 12px; color: #444; font-style: italic; padding: 8px 0; }
+
+  /* SPECS GRID */
+  .specs { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px; }
+  .spec { background: var(--tag-bg); border-radius: 8px; padding: 8px 10px; }
+  .spec-key { font-size: 9px; color: #555; letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 2px; }
+  .spec-val { font-size: 13px; color: var(--text); font-weight: 500; }
+
+  /* TAGS */
+  .tags { display: flex; flex-wrap: wrap; gap: 5px; }
+  .tag {
+    padding: 4px 9px;
+    border-radius: 6px;
+    font-size: 11px;
+    background: var(--tag-bg);
+    color: var(--text-muted);
+    border: 1px solid #2a2a2a;
+  }
+  .tag.yes { color: #1e7a47; border-color: rgba(42,157,92,.25); background: rgba(42,157,92,.08); }
+  .tag.no { color: #aaa; }
+  .tag.cert { color: var(--accent); border-color: rgba(139,94,42,.2); background: rgba(139,94,42,.06); }
+
+  /* CODES */
+  .card-footer {
+    padding: 10px 20px;
+    border-top: 1px solid var(--border);
+    display: flex; justify-content: space-between; align-items: center;
+  }
+  .code { font-size: 11px; color: #b0a090; font-family: 'Courier New', monospace; }
+  .code span { color: var(--text-muted); }
+
+  /* OBS */
+  .obs {
+    font-size: 11px;
+    color: var(--accent);
+    background: rgba(139,94,42,.07);
+    border: 1px solid rgba(139,94,42,.2);
+    border-radius: 6px;
+    padding: 6px 10px;
+    margin-top: 10px;
+  }
+
+  /* EMPTY STATE */
+  .empty {
+    grid-column: 1/-1;
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--text-muted);
+  }
+  .empty-icon { font-size: 64px; margin-bottom: 16px; opacity: .4; }
+  .empty h3 { font-family: 'Playfair Display', serif; font-size: 24px; margin-bottom: 8px; color: #aaa; }
+
+  /* RESET BTN */
+  .btn-reset {
+    padding: 7px 16px;
+    border-radius: 8px;
+    border: 1.5px solid rgba(255,100,100,.3);
+    background: rgba(255,100,100,.06);
+    color: #ff7a7a;
+    font-size: 12px;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all .2s;
+    margin-left: 8px;
+  }
+  .btn-reset:hover { background: rgba(255,100,100,.12); border-color: #ff7a7a; }
+
+  /* ANIMATIONS */
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(16px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .card.visible { animation: fadeIn .35s ease forwards; }
+
+  /* RESPONSIVE */
+  @media (max-width: 768px) {
+    header, .filters-bar { padding: 16px 16px; }
+    .sort-bar { padding: 12px 16px; }
+    main { padding: 0 16px 40px; }
+    #grid { grid-template-columns: 1fr; }
+    .stats { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand">
+      <div class="brand-icon">🌀</div>
+      <div class="brand-text">
+        <h1>ARQDECO</h1>
+        <span>Catálogo de Abanicos</span>
+      </div>
+    </div>
+    <div class="search-wrap">
+      <input type="text" id="search" placeholder="Buscar por descripción, nombre o código...">
+    </div>
+    <div class="stats">
+      <div class="stat"><div class="stat-num" id="total-count">0</div><div class="stat-label">Total</div></div>
+      <div class="stat"><div class="stat-num" id="filtered-count">0</div><div class="stat-label">Mostrados</div></div>
+    </div>
+  </div>
+</header>
+
+<div class="filters-bar">
+  <div class="filters-inner">
+    <!-- Ubicación -->
+    <div class="filter-group">
+      <div class="filter-label">Ubicación</div>
+      <div class="pill-group">
+        <div class="pill active" data-filter="ubicacion" data-val="">Todos</div>
+        <div class="pill pill-int" data-filter="ubicacion" data-val="INT">🏠 Interior</div>
+        <div class="pill pill-ext" data-filter="ubicacion" data-val="EXT">🌿 Exterior</div>
+      </div>
+    </div>
+
+    <!-- Tamaño -->
+    <div class="filter-group">
+      <div class="filter-label">Tamaño</div>
+      <select id="filter-tamano">
+        <option value="">Todos</option>
+      </select>
+    </div>
+
+    <!-- Aspas -->
+    <div class="filter-group">
+      <div class="filter-label">N° Aspas</div>
+      <select id="filter-aspas">
+        <option value="">Todos</option>
+      </select>
+    </div>
+
+    <!-- Control -->
+    <div class="filter-group">
+      <div class="filter-label">Control</div>
+      <select id="filter-control">
+        <option value="">Todos</option>
+      </select>
+    </div>
+
+    <!-- Con Luz -->
+    <div class="filter-group">
+      <div class="filter-label">Con Luz</div>
+      <div class="pill-group">
+        <div class="pill active" data-filter="luz" data-val="">Todos</div>
+        <div class="pill" data-filter="luz" data-val="SI">💡 Con luz</div>
+        <div class="pill" data-filter="luz" data-val="NO">Sin luz</div>
+      </div>
+    </div>
+
+    <!-- Dimmer -->
+    <div class="filter-group">
+      <div class="filter-label">Dimmer</div>
+      <div class="pill-group">
+        <div class="pill active" data-filter="dimmer" data-val="">Todos</div>
+        <div class="pill" data-filter="dimmer" data-val="SI">Sí</div>
+        <div class="pill" data-filter="dimmer" data-val="NO">No</div>
+      </div>
+    </div>
+
+    <!-- CFM mínimo -->
+    <div class="filter-group">
+      <div class="filter-label">CFM Alto (mín)</div>
+      <input type="number" id="filter-cfm-min" placeholder="Ej: 4000" min="0" step="100">
+    </div>
+
+    <!-- Certificación -->
+    <div class="filter-group">
+      <div class="filter-label">Certificación</div>
+      <select id="filter-cert">
+        <option value="">Todos</option>
+      </select>
+    </div>
+
+    <button class="btn-reset" onclick="resetFilters()">✕ Limpiar</button>
+  </div>
+</div>
+
+<div class="sort-bar">
+  <span class="sort-label">ORDENAR POR:</span>
+  <button class="sort-btn" data-sort="nombre">Nombre <span class="sort-arrow">↕</span></button>
+  <button class="sort-btn active" data-sort="cfm_alto">CFM Alto <span class="sort-arrow">↓</span></button>
+  <button class="sort-btn" data-sort="cfm_bajo">CFM Bajo <span class="sort-arrow">↕</span></button>
+  <button class="sort-btn" data-sort="tamano">Tamaño <span class="sort-arrow">↕</span></button>
+  <button class="sort-btn" data-sort="aspas">N° Aspas <span class="sort-arrow">↕</span></button>
+  <button class="sort-btn" data-sort="velocidades">Velocidades <span class="sort-arrow">↕</span></button>
+  <div class="results-count"><strong id="res-count">0</strong> resultados</div>
+</div>
+
+<main>
+  <div id="grid"></div>
+</main>
+
+<script>
+const DATA = [
+  {"cod_arq":"32056","cod_lagar":"7799974","descripcion":"ABANICO IND 3 ASPAS 56BCO","nombre":"AD320-56","tamano":"56","aspas":"3","color_aspas":"BLANCO","material_aspa":"METAL","aspa_reversible":"NO","color_motor":"BLANCO","flujo_inverso":"NO","ubicacion":"INTERIORES","velocidades":"5","control":"PARED","con_luz":"NO","dimmer":"NO","certificacion":"NO","garantia":"6 MESES","incluye":"CONTROL PARED","pot_bajo":"","pot_medio":"","pot_alto":"","cfm_bajo":null,"cfm_medio":null,"cfm_alto":null,"observaciones":"","cod_barras":"7441118406378"},
+  {"cod_arq":"42211","cod_lagar":"7080226","descripcion":"ABANICO 5ASPAS 52 C/CONTROL","nombre":"ARGOS LED SN","tamano":"52","aspas":"5","color_aspas":"SATIN","material_aspa":"ACRILICO","aspa_reversible":"NO","color_motor":"NIQUEL","flujo_inverso":"SI","ubicacion":"INTERIORES","velocidades":"3","control":"REMOTO","con_luz":"INTEGRADO","dimmer":"SI","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"CONTRO-LUZ","pot_bajo":"11W","pot_medio":"34W","pot_alto":"68W","cfm_bajo":1929,"cfm_medio":3999,"cfm_alto":6204,"observaciones":"","cod_barras":"7441118421104"},
+  {"cod_arq":"19384","cod_lagar":"7871909","descripcion":"ABANICO 4ASPAS 52 C/VIDRIO LED","nombre":"ARUBA","tamano":"52","aspas":"4","color_aspas":"MADERA","material_aspa":"ACRILICO","aspa_reversible":"SI","color_motor":"BRONCE","flujo_inverso":"SI","ubicacion":"INTERIORES","velocidades":"3","control":"REMOTO","con_luz":"INTEGRADO","dimmer":"SI","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"CONTRO-LUZ","pot_bajo":"12W","pot_medio":"30W","pot_alto":"66W","cfm_bajo":1924,"cfm_medio":3353,"cfm_alto":4899,"observaciones":"","cod_barras":"7441118406804"},
+  {"cod_arq":"5077","cod_lagar":"7019631","descripcion":"ABANICO 5ASPAS 52 C/VIDRIO","nombre":"BALI","tamano":"52","aspas":"5","color_aspas":"MADERA","material_aspa":"ACRILICO","aspa_reversible":"NO","color_motor":"MADERA","flujo_inverso":"SI","ubicacion":"EXTERIORES","velocidades":"5","control":"CADENA","con_luz":"SI","dimmer":"NO","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"2 BOMBILLOS","pot_bajo":"11W","pot_medio":"40W","pot_alto":"73W","cfm_bajo":2258,"cfm_medio":4385,"cfm_alto":6178,"observaciones":"","cod_barras":"7441118411044"},
+  {"cod_arq":"96931","cod_lagar":"7019630","descripcion":"ABANICO 3ASPAS 56 SIN LUZ","nombre":"CALA LUNA IRON","tamano":"56","aspas":"3","color_aspas":"BRONCE","material_aspa":"ACRILICO","aspa_reversible":"NO","color_motor":"BRONCE","flujo_inverso":"NO","ubicacion":"EXTERIORES","velocidades":"4","control":"CONTRO PARED","con_luz":"NO","dimmer":"NO","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"CONTROL","pot_bajo":"7W","pot_medio":"35W","pot_alto":"64W","cfm_bajo":1708,"cfm_medio":4672,"cfm_alto":6615,"observaciones":"","cod_barras":"7441118411006"},
+  {"cod_arq":"9693","cod_lagar":"7019629","descripcion":"ABANICO 3ASPAS 56 SIN LUZ","nombre":"CALA LUNA NICKE","tamano":"56","aspas":"3","color_aspas":"TRANSPARENTE","material_aspa":"ACRILICO","aspa_reversible":"NO","color_motor":"NIQUEL","flujo_inverso":"NO","ubicacion":"INTERIORES","velocidades":"4","control":"CONTRO PARED","con_luz":"NO","dimmer":"NO","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"CONTRO PARED","pot_bajo":"7W","pot_medio":"35W","pot_alto":"64W","cfm_bajo":1708,"cfm_medio":4672,"cfm_alto":6615,"observaciones":"","cod_barras":"7441118410993"},
+  {"cod_arq":"5286","cod_lagar":"7119046","descripcion":"ABANICO 5ASPAS 60 3K Y 4K","nombre":"IBIZZA LED EB","tamano":"60","aspas":"5","color_aspas":"BRONCE","material_aspa":"ACRILICO","aspa_reversible":"NO","color_motor":"BRONCE","flujo_inverso":"SI","ubicacion":"EXTERIORES","velocidades":"4","control":"CADENA","con_luz":"INTEGRADO","dimmer":"SI","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"LUZ DIMMER","pot_bajo":"15W","pot_medio":"63W","pot_alto":"102W","cfm_bajo":3431,"cfm_medio":7919,"cfm_alto":10267,"observaciones":"","cod_barras":"7441118411358"},
+  {"cod_arq":"19390","cod_lagar":"7871911","descripcion":"ABANICO 3ASPAS 66 C/VIDRIO LED","nombre":"JAVA","tamano":"66","aspas":"3","color_aspas":"MADERA","material_aspa":"ACRILICO","aspa_reversible":"NO","color_motor":"MADERA","flujo_inverso":"SI","ubicacion":"INTERIORES","velocidades":"SIST INTELIGENTE","control":"REMOTO","con_luz":"INTEGRADO","dimmer":"SI","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"CONTRO-LUZ","pot_bajo":"3W","pot_medio":"8W","pot_alto":"32W","cfm_bajo":1655,"cfm_medio":5084,"cfm_alto":8735,"observaciones":"CORRIENTE DIRECTA MAS SILENCIOSO","cod_barras":"7441118406774"},
+  {"cod_arq":"19381","cod_lagar":"7870952","descripcion":"ABANICO 5ASPAS 42 C/VIDRIO","nombre":"MADEIRA","tamano":"42","aspas":"5","color_aspas":"MADERA","material_aspa":"PLASTICO","aspa_reversible":"NO","color_motor":"BRONCE","flujo_inverso":"SI","ubicacion":"EXTERIORES","velocidades":"3","control":"REMOTO","con_luz":"INTEGRADO","dimmer":"SI","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"CONTROL-LUZ","pot_bajo":"15W","pot_medio":"34W","pot_alto":"63W","cfm_bajo":1653,"cfm_medio":2583,"cfm_alto":3598,"observaciones":"","cod_barras":"7441118411587"},
+  {"cod_arq":"19383","cod_lagar":"7871698","descripcion":"ABANICO 5ASPAS 42 C/VIDRIO","nombre":"MADEIRA NICKEL","tamano":"42","aspas":"5","color_aspas":"MADERA","material_aspa":"PLASTICO","aspa_reversible":"NO","color_motor":"NIQUEL","flujo_inverso":"SI","ubicacion":"INTERIORES","velocidades":"3","control":"REMOTO","con_luz":"INTEGRADO","dimmer":"SI","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"CONTROL-LUZ","pot_bajo":"15W","pot_medio":"34W","pot_alto":"63W","cfm_bajo":1653,"cfm_medio":2583,"cfm_alto":3598,"observaciones":"","cod_barras":"7441118411594"},
+  {"cod_arq":"17805","cod_lagar":"7872367","descripcion":"ABANICO 5ASPAS 44 TRES LUCES","nombre":"MALIBU","tamano":"44","aspas":"5","color_aspas":"MADERA","material_aspa":"PLASTICO","aspa_reversible":"SI","color_motor":"BRONCE","flujo_inverso":"SI","ubicacion":"INTERIORES","velocidades":"3","control":"CADENA","con_luz":"3 E-27","dimmer":"NO","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"3 BOMBILLOS","pot_bajo":"12W","pot_medio":"24W","pot_alto":"45W","cfm_bajo":1781,"cfm_medio":2765,"cfm_alto":3617,"observaciones":"","cod_barras":"7441118411563"},
+  {"cod_arq":"52952","cod_lagar":"7119044","descripcion":"ABANICO 5ASPAS 52 SIN VIDRIO","nombre":"MARBELLA II NI","tamano":"52","aspas":"5","color_aspas":"BRONCE","material_aspa":"PLASTICO","aspa_reversible":"SI","color_motor":"BRONCE","flujo_inverso":"SI","ubicacion":"EXTERIORES","velocidades":"3","control":"CADENA","con_luz":"NO","dimmer":"NO","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"NO","pot_bajo":"9W","pot_medio":"29W","pot_alto":"65W","cfm_bajo":1737,"cfm_medio":3647,"cfm_alto":6615,"observaciones":"","cod_barras":"7441118411372"},
+  {"cod_arq":"17909","cod_lagar":"7872807","descripcion":"ABANICO 3 ASPAS 60 C/LUZ DIMER","nombre":"MONTE CARLO BN","tamano":"60","aspas":"3","color_aspas":"BRONCE","material_aspa":"ACRILICO","aspa_reversible":"NO","color_motor":"NIQUEL","flujo_inverso":"SI","ubicacion":"INTERIORES","velocidades":"SIST INTELIGENTE","control":"REMOTO","con_luz":"INTEGRADO","dimmer":"SI","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"CONTROL-LUZ","pot_bajo":"2W","pot_medio":"6W","pot_alto":"37W","cfm_bajo":1586,"cfm_medio":4203,"cfm_alto":6681,"observaciones":"CORRIENTE DIRECTA MAS SILENCIOSO","cod_barras":"7441118410436"},
+  {"cod_arq":"19385","cod_lagar":"7871910","descripcion":"ABANICO 5ASPAS 54 C/VIDRIO LED","nombre":"NASSAU","tamano":"54","aspas":"5","color_aspas":"GRIS","material_aspa":"PLASTICO","aspa_reversible":"SI","color_motor":"BRONCE","flujo_inverso":"SI","ubicacion":"EXTERIORES","velocidades":"3","control":"CADENA","con_luz":"INTEGRADO","dimmer":"NO","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"LUZ INTEGRADA","pot_bajo":"11W","pot_medio":"31W","pot_alto":"63W","cfm_bajo":1549,"cfm_medio":3214,"cfm_alto":4920,"observaciones":"","cod_barras":"7441118406811"},
+  {"cod_arq":"19389","cod_lagar":"7872806","descripcion":"ABANICO 5 ASPAS 52 C/LUZ DIMER","nombre":"NIZA EB","tamano":"52","aspas":"5","color_aspas":"BRONCE","material_aspa":"ACRILICO","aspa_reversible":"NO","color_motor":"BRONCE","flujo_inverso":"SI","ubicacion":"EXTERIORES","velocidades":"3","control":"REMOTO","con_luz":"INTEGRADO","dimmer":"SI","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"LUZ INTEGRADA","pot_bajo":"10W","pot_medio":"","pot_alto":"47W","cfm_bajo":2077,"cfm_medio":null,"cfm_alto":5170,"observaciones":"","cod_barras":"7441118410412"},
+  {"cod_arq":"19388","cod_lagar":"7870951","descripcion":"ABANICO 3ASPAS 54 C/VIDRIO","nombre":"OPORTO","tamano":"54","aspas":"3","color_aspas":"NEGRO","material_aspa":"ACRILICO","aspa_reversible":"NO","color_motor":"NIQUEL","flujo_inverso":"SI","ubicacion":"INTERIORES","velocidades":"3","control":"REMOTO","con_luz":"INTEGRADO","dimmer":"SI","certificacion":"ETL","garantia":"DE POR VIDA LIMITADA","incluye":"CONTROL-LUZ","pot_bajo":"12W","pot_medio":"30W","pot_alto":"63W","cfm_bajo":1797,"cfm_medio":3619,"cfm_alto":5376,"observaciones":"","cod_barras":"7441118411501"},
+  {"cod_arq":"1199","cod_lagar":"7019625","descripcion":"ABANICO 5ASPAS 42 SIN VIDRIO","nombre":"PALAU 42 IRON","tamano":"42","aspas":"5","color_aspas":"BRONCE","material_aspa":"PLASTICO","aspa_reversible":"SI","color_motor":"BRONCE","flujo_inverso":"SI","ubicacion":"EXTERIORES","velocidades":"3","control":"CADENA","con_luz":"NO","dimmer":"NO","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"NO","pot_bajo":"12W","pot_medio":"29W","pot_alto":"49W","cfm_bajo":1812,"cfm_medio":3267,"cfm_alto":4130,"observaciones":"","cod_barras":"7441118410979"},
+  {"cod_arq":"11991","cod_lagar":"7019624","descripcion":"ABANICO 5ASPAS 42 SIN VIDRIO","nombre":"PALAU 42 WH","tamano":"42","aspas":"5","color_aspas":"BLANCO","material_aspa":"PLASTICO","aspa_reversible":"SI","color_motor":"BLANCO","flujo_inverso":"SI","ubicacion":"EXTERIORES","velocidades":"3","control":"CADENA","con_luz":"NO","dimmer":"NO","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"NO","pot_bajo":"12W","pot_medio":"29W","pot_alto":"49W","cfm_bajo":1812,"cfm_medio":3267,"cfm_alto":4130,"observaciones":"","cod_barras":"7441118410986"},
+  {"cod_arq":"2444","cod_lagar":"7019627","descripcion":"ABANICO 5ASPAS 52 C/VIDRIO","nombre":"PALAU IRON","tamano":"52","aspas":"5","color_aspas":"MADERA","material_aspa":"PLASTICO","aspa_reversible":"NO","color_motor":"BRONCE","flujo_inverso":"SI","ubicacion":"EXTERIORES","velocidades":"3","control":"CADENA","con_luz":"SI","dimmer":"NO","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"2 BOMBILLOS","pot_bajo":"11W","pot_medio":"32W","pot_alto":"66W","cfm_bajo":1583,"cfm_medio":3587,"cfm_alto":5448,"observaciones":"","cod_barras":"7441118411020"},
+  {"cod_arq":"24441","cod_lagar":"7019628","descripcion":"ABANICO 5ASPAS 52 C/VIDRIO","nombre":"PALAU NICKEL","tamano":"52","aspas":"6","color_aspas":"MADERA","material_aspa":"PLASTICO","aspa_reversible":"NO","color_motor":"NIQUEL","flujo_inverso":"SI","ubicacion":"EXTERIORES","velocidades":"4","control":"CADENA","con_luz":"SI","dimmer":"NO","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"3 BOMBILLOS","pot_bajo":"11W","pot_medio":"32W","pot_alto":"66W","cfm_bajo":1583,"cfm_medio":3587,"cfm_alto":5448,"observaciones":"","cod_barras":"7441118411037"},
+  {"cod_arq":"23433","cod_lagar":"7019626","descripcion":"ABANICO 5ASPAS 52 C/VIDRIO","nombre":"PALAU WHITE","tamano":"52","aspas":"7","color_aspas":"BLANCO","material_aspa":"PLASTICO","aspa_reversible":"SI","color_motor":"BLANCO","flujo_inverso":"SI","ubicacion":"EXTERIORES","velocidades":"5","control":"CADENA","con_luz":"SI","dimmer":"NO","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"4 BOMBILLOS","pot_bajo":"11W","pot_medio":"32W","pot_alto":"66W","cfm_bajo":1583,"cfm_medio":3587,"cfm_alto":5448,"observaciones":"","cod_barras":"7441118411013"},
+  {"cod_arq":"52955","cod_lagar":"7872802","descripcion":"ABANICO 6 ASPAS 30 C/VIDRIO","nombre":"PETIT EB","tamano":"30","aspas":"6","color_aspas":"BRONCE","material_aspa":"PLASTICO","aspa_reversible":"NO","color_motor":"BRONCE","flujo_inverso":"SI","ubicacion":"INTERIORES","velocidades":"3","control":"CADENA","con_luz":"SI","dimmer":"NO","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"1 BOMBILLO","pot_bajo":"11W","pot_medio":"23W","pot_alto":"44W","cfm_bajo":940,"cfm_medio":1439,"cfm_alto":1896,"observaciones":"","cod_barras":"7441118410313"},
+  {"cod_arq":"52959","cod_lagar":"7872803","descripcion":"ABANICO 6 ASPAS 30 C/VIDRIO","nombre":"PETIT WH","tamano":"30","aspas":"6","color_aspas":"BLANCO","material_aspa":"PLASTICO","aspa_reversible":"NO","color_motor":"BLANCO","flujo_inverso":"SI","ubicacion":"INTERIORES","velocidades":"3","control":"CADENA","con_luz":"SI","dimmer":"NO","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"1 BOMBILLO","pot_bajo":"11W","pot_medio":"23W","pot_alto":"44W","cfm_bajo":940,"cfm_medio":1439,"cfm_alto":1896,"observaciones":"","cod_barras":"7441118410320"},
+  {"cod_arq":"17809","cod_lagar":"7872805","descripcion":"ABANICO 3 ASPAS 70 S/LUZ NICK","nombre":"TESLA BN","tamano":"70","aspas":"3","color_aspas":"PLATEADA","material_aspa":"METAL","aspa_reversible":"NO","color_motor":"NIQUEL","flujo_inverso":"NO","ubicacion":"EXTERIORES","velocidades":"4","control":"CONTRO PARED","con_luz":"NO","dimmer":"NO","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"CONTROL PARED","pot_bajo":"10W","pot_medio":"","pot_alto":"79W","cfm_bajo":2170,"cfm_medio":null,"cfm_alto":7712,"observaciones":"","cod_barras":"7441118410344"},
+  {"cod_arq":"96972","cod_lagar":"7872368","descripcion":"ABANICO 3ASPAS 72 SIN LUZ","nombre":"TITAN","tamano":"72","aspas":"3","color_aspas":"BRONCE","material_aspa":"METAL","aspa_reversible":"NO","color_motor":"BRONCE","flujo_inverso":"NO","ubicacion":"EXTERIORES","velocidades":"3","control":"CONTRO PARED","con_luz":"NO","dimmer":"NO","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"CONTRO PARED","pot_bajo":"7W","pot_medio":"46W","pot_alto":"70W","cfm_bajo":1275,"cfm_medio":5364,"cfm_alto":6966,"observaciones":"","cod_barras":"7441118411570"},
+  {"cod_arq":"96956","cod_lagar":"7872366","descripcion":"ABANICO 3ASPAS 56 SIN LUZ","nombre":"WINDY BN","tamano":"56","aspas":"3","color_aspas":"NIQUEL","material_aspa":"METAL","aspa_reversible":"NO","color_motor":"NIQUEL","flujo_inverso":"NO","ubicacion":"INTERIORES","velocidades":"3","control":"CONTRO PARED","con_luz":"NO","dimmer":"NO","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"CONTROL PARED","pot_bajo":"12W","pot_medio":"29W","pot_alto":"54W","cfm_bajo":2452,"cfm_medio":4836,"cfm_alto":7035,"observaciones":"","cod_barras":"7441118411488"},
+  {"cod_arq":"96950","cod_lagar":"7872365","descripcion":"ABANICO 3ASPAS 56 BCO S LUZ","nombre":"WINDY WH","tamano":"56","aspas":"3","color_aspas":"BLANCO","material_aspa":"METAL","aspa_reversible":"NO","color_motor":"BLANCO","flujo_inverso":"NO","ubicacion":"INTERIORES","velocidades":"3","control":"CONTRO PARED","con_luz":"NO","dimmer":"NO","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"CONTROL PARED","pot_bajo":"12W","pot_medio":"29W","pot_alto":"54W","cfm_bajo":2452,"cfm_medio":4836,"cfm_alto":7035,"observaciones":"","cod_barras":"7441118411495"},
+  {"cod_arq":"96959","cod_lagar":"7872804","descripcion":"ABANICO 3 ASPAS 56 EB S/LUZ","nombre":"WINDY EB","tamano":"56","aspas":"3","color_aspas":"BRONCE","material_aspa":"METAL","aspa_reversible":"NO","color_motor":"BRONCE","flujo_inverso":"NO","ubicacion":"INTERIORES","velocidades":"3","control":"CONTRO PARED","con_luz":"NO","dimmer":"NO","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"CONTROL PARED","pot_bajo":"12W","pot_medio":"29W","pot_alto":"54W","cfm_bajo":2452,"cfm_medio":4836,"cfm_alto":7035,"observaciones":"","cod_barras":"7441118410337"},
+  {"cod_arq":"1010","cod_lagar":"7890127","descripcion":"ABANICO CON CONTROL 6 ASPAS C/VIDRIO MONACO BK","nombre":"MONACO BK","tamano":"30","aspas":"6","color_aspas":"NEGRO","material_aspa":"ACRILICO","aspa_reversible":"NO","color_motor":"NEGRO","flujo_inverso":"SI","ubicacion":"INTERIORES","velocidades":"3","control":"REMOTO","con_luz":"INTEGRADO","dimmer":"NO","certificacion":"NO","garantia":"6 MESES","incluye":"CONTROL-LUZ","pot_bajo":"","pot_medio":"","pot_alto":"","cfm_bajo":null,"cfm_medio":null,"cfm_alto":null,"observaciones":"30W 110-280 RPM","cod_barras":"7441111844720"},
+  {"cod_arq":"1011","cod_lagar":"7890128","descripcion":"ABANICO CON CONTROL 6 ASPAS C/VIDRIO MONACO CF","nombre":"MONACO CF","tamano":"30","aspas":"6","color_aspas":"BRONCE","material_aspa":"ACRILICO","aspa_reversible":"NO","color_motor":"BRONCE","flujo_inverso":"SI","ubicacion":"INTERIORES","velocidades":"3","control":"REMOTO","con_luz":"INTEGRADO","dimmer":"NO","certificacion":"NO","garantia":"6 MESES","incluye":"CONTROL-LUZ","pot_bajo":"","pot_medio":"","pot_alto":"","cfm_bajo":null,"cfm_medio":null,"cfm_alto":null,"observaciones":"","cod_barras":"744111844721"},
+  {"cod_arq":"1012","cod_lagar":"7890129","descripcion":"ABANICO CON CONTROL 6 ASPAS C/VIDRIO MONACO WH","nombre":"MONACO WH","tamano":"30","aspas":"6","color_aspas":"BLANCO","material_aspa":"ACRILICO","aspa_reversible":"NO","color_motor":"BLANCO","flujo_inverso":"SI","ubicacion":"INTERIORES","velocidades":"3","control":"REMOTO","con_luz":"INTEGRADO","dimmer":"NO","certificacion":"NO","garantia":"6 MESES","incluye":"CONTROL-LUZ","pot_bajo":"","pot_medio":"","pot_alto":"","cfm_bajo":null,"cfm_medio":null,"cfm_alto":null,"observaciones":"","cod_barras":"744111844719"},
+  {"cod_arq":"51869","cod_lagar":"7019636","descripcion":"MOTOR HAMPTON BAY CAFE","nombre":"MOTOR 518-696","tamano":"52","aspas":"5","color_aspas":"","material_aspa":"","aspa_reversible":"","color_motor":"BRONCE","flujo_inverso":"SI","ubicacion":"EXTERIORES","velocidades":"3","control":"CADENA","con_luz":"NO","dimmer":"NO","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"1 BOMBILLO","pot_bajo":"11W","pot_medio":"37W","pot_alto":"72W","cfm_bajo":1765,"cfm_medio":3661,"cfm_alto":5362,"observaciones":"","cod_barras":"7441118411075"},
+  {"cod_arq":"17901","cod_lagar":"7870490","descripcion":"ABANICO 5ASPAS 52 C/VIDRIO LED","nombre":"COPACABANA I/EB","tamano":"52","aspas":"5","color_aspas":"BRONCE","material_aspa":"ACRILICA","aspa_reversible":"NO","color_motor":"BRONCE","flujo_inverso":"SI","ubicacion":"INTERIORES","velocidades":"3","control":"CADENA","con_luz":"SI","dimmer":"NO","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"1 BOMBILLO","pot_bajo":"9W","pot_medio":"29W","pot_alto":"58W","cfm_bajo":928,"cfm_medio":2202,"cfm_alto":3256,"observaciones":"","cod_barras":"7441118411518"},
+  {"cod_arq":"17903","cod_lagar":"7870489","descripcion":"ABANICO 5ASPAS 52 C/VIDRIO LED","nombre":"COPACABANA NICK","tamano":"52","aspas":"5","color_aspas":"MADERA","material_aspa":"ACRILICA","aspa_reversible":"NO","color_motor":"NIQUEL","flujo_inverso":"SI","ubicacion":"INTERIORES","velocidades":"3","control":"CADENA","con_luz":"SI","dimmer":"NO","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"1 BOMBILLO","pot_bajo":"9W","pot_medio":"29W","pot_alto":"58W","cfm_bajo":928,"cfm_medio":2202,"cfm_alto":3256,"observaciones":"","cod_barras":"7441118411471"},
+  {"cod_arq":"17902","cod_lagar":"7870488","descripcion":"ABANICO 5ASPAS 52 C/VIDRIO LED","nombre":"COPACABANA WH","tamano":"52","aspas":"5","color_aspas":"BLANCO","material_aspa":"ACRILICA","aspa_reversible":"SI","color_motor":"BLANCO","flujo_inverso":"SI","ubicacion":"INTERIORES","velocidades":"3","control":"CADENA","con_luz":"SI","dimmer":"NO","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"1 BOMBILLO","pot_bajo":"9W","pot_medio":"29W","pot_alto":"58W","cfm_bajo":928,"cfm_medio":2202,"cfm_alto":3256,"observaciones":"","cod_barras":"7441118411457"},
+  {"cod_arq":"17801","cod_lagar":"7870492","descripcion":"ABANICO 5ASPAS 52 C/VIDRIO LED","nombre":"SAN MARINO I/EB","tamano":"52","aspas":"5","color_aspas":"BRONCE","material_aspa":"ACRILICA","aspa_reversible":"NO","color_motor":"BRONCE","flujo_inverso":"SI","ubicacion":"INTERIORES","velocidades":"3","control":"CADENA","con_luz":"SI","dimmer":"NO","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"3 BOMBILLO","pot_bajo":"14W","pot_medio":"29W","pot_alto":"60W","cfm_bajo":2111,"cfm_medio":3044,"cfm_alto":4654,"observaciones":"","cod_barras":""},
+  {"cod_arq":"17803","cod_lagar":"7870493","descripcion":"ABANICO 5ASPAS 52 C/VIDRIO LED","nombre":"SAN MARINO NICK","tamano":"52","aspas":"5","color_aspas":"MADERA","material_aspa":"ACRILICA","aspa_reversible":"NO","color_motor":"NIQUEL","flujo_inverso":"SI","ubicacion":"INTERIORES","velocidades":"3","control":"CADENA","con_luz":"SI","dimmer":"NO","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"3 BOMBILLO","pot_bajo":"14W","pot_medio":"29W","pot_alto":"60W","cfm_bajo":2111,"cfm_medio":3044,"cfm_alto":4654,"observaciones":"","cod_barras":""},
+  {"cod_arq":"17802","cod_lagar":"7870491","descripcion":"ABANICO 5ASPAS 52 C/VIDRIO LED","nombre":"SAN MARINO WH","tamano":"52","aspas":"5","color_aspas":"BLANCO","material_aspa":"ACRILICA","aspa_reversible":"SI","color_motor":"BLANCO","flujo_inverso":"SI","ubicacion":"INTERIORES","velocidades":"3","control":"CADENA","con_luz":"SI","dimmer":"NO","certificacion":"UL","garantia":"DE POR VIDA LIMITADA","incluye":"3 BOMBILLO","pot_bajo":"14W","pot_medio":"29W","pot_alto":"60W","cfm_bajo":2111,"cfm_medio":3044,"cfm_alto":4654,"observaciones":"","cod_barras":""}
+];
+
+const IMAGE_MAP = {
+  "AD320-56":       "https://arqdeco.cr/wp-content/uploads/2025/12/ad320-img-1-300x300.jpg",
+  "ARGOS LED SN":   "https://arqdeco.cr/wp-content/uploads/2025/12/argos-img-300x300.jpg",
+  "ARUBA":          "https://arqdeco.cr/wp-content/uploads/2025/12/aruba-img-300x300.jpg",
+  "BALI":           "https://arqdeco.cr/wp-content/uploads/2025/12/bali-img-300x300.jpg",
+  "CALA LUNA IRON": "https://arqdeco.cr/wp-content/uploads/2025/12/cala-luna-ir-img-300x300.jpg",
+  "CALA LUNA NICKE":"https://arqdeco.cr/wp-content/uploads/2025/12/cala-luna-img-300x300.jpg",
+  "IBIZZA LED EB":  "https://arqdeco.cr/wp-content/uploads/2025/12/ibizza-img-300x300.jpg",
+  "JAVA":           "https://arqdeco.cr/wp-content/uploads/2025/12/java-img-300x300.jpg",
+  "MADEIRA":        "https://arqdeco.cr/wp-content/uploads/2025/12/madeira-ext-img-300x300.jpg",
+  "MADEIRA NICKEL": "https://arqdeco.cr/wp-content/uploads/2025/12/madeira-img-300x300.jpg",
+  "MALIBU":         "https://arqdeco.cr/wp-content/uploads/2025/12/malibu-img-300x300.jpg",
+  "MARBELLA II NI": "https://arqdeco.cr/wp-content/uploads/2025/12/marbella-img-300x300.jpg",
+  "MONTE CARLO BN": "https://arqdeco.cr/wp-content/uploads/2025/12/montecarlo-img-300x300.jpg",
+  "NASSAU":         "https://arqdeco.cr/wp-content/uploads/2025/12/nassau-img-300x300.jpg",
+  "NIZA EB":        "https://arqdeco.cr/wp-content/uploads/2025/12/niza-img-300x300.jpg",
+  "OPORTO":         "https://arqdeco.cr/wp-content/uploads/2025/12/oporto-img-300x300.jpg",
+  "PALAU 42 IRON":  "https://arqdeco.cr/wp-content/uploads/2025/12/palau-42-img-300x300.jpg",
+  "PALAU 42 WH":    "https://arqdeco.cr/wp-content/uploads/2025/12/palau-42-img-300x300.jpg",
+  "PALAU IRON":     "https://arqdeco.cr/wp-content/uploads/2025/12/palau-52-img-300x300.jpg",
+  "PALAU NICKEL":   "https://arqdeco.cr/wp-content/uploads/2025/12/palau-52-img-300x300.jpg",
+  "PALAU WHITE":    "https://arqdeco.cr/wp-content/uploads/2025/12/palau-52-img-300x300.jpg",
+  "TESLA BN":       "https://arqdeco.cr/wp-content/uploads/2025/12/tesla-img-300x300.jpg",
+  "TITAN":          "https://arqdeco.cr/wp-content/uploads/2025/12/titan-img-300x300.jpg",
+  "WINDY BN":       "https://arqdeco.cr/wp-content/uploads/2025/12/windy-img-300x300.jpg",
+  "WINDY WH":       "https://arqdeco.cr/wp-content/uploads/2025/12/windy-img-300x300.jpg",
+  "WINDY EB":       "https://arqdeco.cr/wp-content/uploads/2025/12/windy-img-300x300.jpg",
+  "SAN MARINO I/EB":"https://arqdeco.cr/wp-content/uploads/2025/03/San-Marino-EBMaple-300x300.png",
+  "SAN MARINO NICK":"https://arqdeco.cr/wp-content/uploads/2025/03/San-Marino-EBMaple-300x300.png",
+  "SAN MARINO WH":  "https://arqdeco.cr/wp-content/uploads/2025/03/San-Marino-EBMaple-300x300.png"
+};
+
+const maxCFM = Math.max.apply(null, DATA.map(function(d){ return d.cfm_alto || 0; }));
+
+var filters = {search:'', ubicacion:'', luz:'', dimmer:'', tamano:'', aspas:'', control:'', cfmMin:'', cert:''};
+var sortField = 'cfm_alto';
+var sortDir = -1;
+
+function populateSelects() {
+  var tamanos = [];
+  var aspasArr = [];
+  var controles = [];
+  var certs = [];
+  DATA.forEach(function(d) {
+    if(d.tamano && tamanos.indexOf(d.tamano) === -1) tamanos.push(d.tamano);
+    if(d.aspas && aspasArr.indexOf(d.aspas) === -1) aspasArr.push(d.aspas);
+    if(d.control && controles.indexOf(d.control) === -1) controles.push(d.control);
+    if(d.certificacion && certs.indexOf(d.certificacion) === -1) certs.push(d.certificacion);
+  });
+  tamanos.sort(function(a,b){ return parseFloat(a)-parseFloat(b); });
+  aspasArr.sort(function(a,b){ return parseInt(a)-parseInt(b); });
+  controles.sort();
+  certs.sort();
+  fillSelect('filter-tamano', tamanos);
+  fillSelect('filter-aspas', aspasArr);
+  fillSelect('filter-control', controles);
+  fillSelect('filter-cert', certs);
+}
+
+function fillSelect(id, vals) {
+  var sel = document.getElementById(id);
+  vals.forEach(function(v) {
+    var opt = document.createElement('option');
+    opt.value = v; opt.textContent = v;
+    sel.appendChild(opt);
+  });
+}
+
+function cfmBar(fan) {
+  if (!fan.cfm_alto && !fan.cfm_bajo) {
+    return '<div class="cfm-section"><div class="cfm-title">CFM \u2014 Flujo de Aire</div><div class="cfm-na">Sin datos de CFM</div></div>';
+  }
+  var b = fan.cfm_bajo || 0, m = fan.cfm_medio || 0, a = fan.cfm_alto || 0;
+  var hB = maxCFM ? Math.round((b / maxCFM) * 36) : 0;
+  var hM = maxCFM ? Math.round((m / maxCFM) * 36) : 0;
+  var hA = maxCFM ? Math.round((a / maxCFM) * 36) : 4;
+  return '<div class="cfm-section">' +
+    '<div class="cfm-title">CFM \u2014 Flujo de Aire</div>' +
+    '<div class="cfm-bars">' +
+      '<div class="cfm-bar-wrap"><div class="cfm-bar bar-bajo" style="height:' + hB + 'px"></div>' +
+        '<div class="cfm-val">' + (b ? b.toLocaleString() : '\u2014') + '</div><div class="cfm-spd">Baja</div></div>' +
+      '<div class="cfm-bar-wrap"><div class="cfm-bar bar-medio" style="height:' + hM + 'px"></div>' +
+        '<div class="cfm-val">' + (m ? m.toLocaleString() : '\u2014') + '</div><div class="cfm-spd">Media</div></div>' +
+      '<div class="cfm-bar-wrap"><div class="cfm-bar bar-alto" style="height:' + hA + 'px"></div>' +
+        '<div class="cfm-val">' + (a ? a.toLocaleString() : '\u2014') + '</div><div class="cfm-spd">Alta</div></div>' +
+    '</div></div>';
+}
+
+function hasLuz(fan) {
+  var v = (fan.con_luz || '').toUpperCase();
+  return v && v !== 'NO';
+}
+
+function cardImg(fan) {
+  var url = IMAGE_MAP[fan.nombre] || null;
+  if (url) {
+    return '<div class="card-img"><img src="' + url + '" alt="' + fan.nombre + '" loading="lazy">' +
+           '<span class="img-badge">arqdeco.cr</span></div>';
+  }
+  return '<div class="card-img"><div class="card-img-placeholder"><span style="font-size:40px">&#128256;</span><span>Sin imagen</span></div></div>';
+}
+
+function renderCard(fan, idx) {
+  var isInt = fan.ubicacion.toUpperCase().indexOf('INT') >= 0;
+  var locClass = isInt ? 'loc-int' : 'loc-ext';
+  var locText = isInt ? 'Interior' : 'Exterior';
+  var luz = hasLuz(fan);
+
+  var tags = '';
+  if (luz) tags += '<span class="tag yes">\uD83D\uDCA1 Con luz</span>';
+  if (fan.dimmer === 'SI') tags += '<span class="tag yes">Dimmer</span>';
+  if (fan.aspa_reversible === 'SI') tags += '<span class="tag yes">Reversible</span>';
+  if (fan.flujo_inverso === 'SI') tags += '<span class="tag yes">Flujo inverso</span>';
+  if (fan.certificacion && fan.certificacion !== 'NO' && fan.certificacion !== '') {
+    tags += '<span class="tag cert">\u2713 ' + fan.certificacion + '</span>';
+  }
+  if (fan.velocidades === 'SIST INTELIGENTE') tags += '<span class="tag yes">Inteligente</span>';
+
+  var potSpec = fan.pot_alto ? '<div class="spec"><div class="spec-key">Potencia (B/M/A)</div><div class="spec-val">' + (fan.pot_bajo||'-') + ' / ' + (fan.pot_medio||'-') + ' / ' + fan.pot_alto + '</div></div>' : '';
+  var obs = fan.observaciones ? '<div class="obs">\u26A1 ' + fan.observaciones + '</div>' : '';
+  var tagsDiv = tags ? '<div class="tags">' + tags + '</div>' : '';
+
+  var delay = (idx * 0.04).toFixed(2);
+
+  return '<div class="card visible" style="animation-delay:' + delay + 's">' +
+    cardImg(fan) +
+    '<div class="card-header">' +
+      '<div>' +
+        '<div class="card-title">' + fan.nombre + '</div>' +
+        '<div class="card-subtitle">' + (fan.tamano ? fan.tamano + ' &quot; &middot; ' : '') + fan.aspas + ' aspas &middot; ' + (fan.material_aspa || '\u2014') + '</div>' +
+      '</div>' +
+      '<span class="loc-badge ' + locClass + '">' + locText + '</span>' +
+    '</div>' +
+    '<div class="card-body">' +
+      cfmBar(fan) +
+      '<div class="specs">' +
+        '<div class="spec"><div class="spec-key">Control</div><div class="spec-val">' + (fan.control || '\u2014') + '</div></div>' +
+        '<div class="spec"><div class="spec-key">Velocidades</div><div class="spec-val">' + (fan.velocidades === 'SIST INTELIGENTE' ? 'Inteligente' : (fan.velocidades || '\u2014')) + '</div></div>' +
+        '<div class="spec"><div class="spec-key">Color aspa</div><div class="spec-val">' + (fan.color_aspas || '\u2014') + '</div></div>' +
+        '<div class="spec"><div class="spec-key">Color motor</div><div class="spec-val">' + (fan.color_motor || '\u2014') + '</div></div>' +
+        potSpec +
+        '<div class="spec"><div class="spec-key">Garant\u00EDa</div><div class="spec-val" style="font-size:11px">' + (fan.garantia || '\u2014') + '</div></div>' +
+      '</div>' +
+      tagsDiv +
+      obs +
+    '</div>' +
+    '<div class="card-footer">' +
+      '<div class="code">ARQ: <span>' + fan.cod_arq + '</span></div>' +
+      '<div class="code">LAGAR: <span>' + fan.cod_lagar + '</span></div>' +
+    '</div>' +
+  '</div>';
+}
+
+function getFilteredSorted() {
+  var data = DATA.filter(function(fan) {
+    var q = filters.search.toLowerCase();
+    if (q) {
+      var hay = (fan.nombre + ' ' + fan.descripcion + ' ' + fan.cod_arq + ' ' + fan.cod_lagar).toLowerCase();
+      if (hay.indexOf(q) === -1) return false;
+    }
+    if (filters.ubicacion) {
+      var isInt = fan.ubicacion.toUpperCase().indexOf('INT') >= 0;
+      if (filters.ubicacion === 'INT' && !isInt) return false;
+      if (filters.ubicacion === 'EXT' && isInt) return false;
+    }
+    if (filters.luz) {
+      var hasL = hasLuz(fan);
+      if (filters.luz === 'SI' && !hasL) return false;
+      if (filters.luz === 'NO' && hasL) return false;
+    }
+    if (filters.dimmer && fan.dimmer !== filters.dimmer) return false;
+    if (filters.tamano && fan.tamano !== filters.tamano) return false;
+    if (filters.aspas && fan.aspas !== filters.aspas) return false;
+    if (filters.control && fan.control !== filters.control) return false;
+    if (filters.cert && fan.certificacion !== filters.cert) return false;
+    if (filters.cfmMin !== '') {
+      var mn = parseFloat(filters.cfmMin);
+      if (!fan.cfm_alto || fan.cfm_alto < mn) return false;
+    }
+    return true;
+  });
+
+  data.sort(function(a, b) {
+    var va = a[sortField], vb = b[sortField];
+    if (sortField === 'tamano') { va = parseFloat(va)||0; vb = parseFloat(vb)||0; }
+    else if (sortField === 'aspas') { va = parseInt(va)||0; vb = parseInt(vb)||0; }
+    else if (sortField === 'velocidades') { va = parseInt(va)||0; vb = parseInt(vb)||0; }
+    else if (sortField === 'cfm_alto' || sortField === 'cfm_bajo' || sortField === 'cfm_medio') { va = va||0; vb = vb||0; }
+    else { va = (va||'').toString().toLowerCase(); vb = (vb||'').toString().toLowerCase(); }
+    if (va < vb) return -1 * sortDir;
+    if (va > vb) return 1 * sortDir;
+    return 0;
+  });
+  return data;
+}
+
+function render() {
+  var data = getFilteredSorted();
+  var grid = document.getElementById('grid');
+  document.getElementById('filtered-count').textContent = data.length;
+  document.getElementById('res-count').textContent = data.length;
+  if (!data.length) {
+    grid.innerHTML = '<div class="empty"><div class="empty-icon">&#128256;</div><h3>Sin resultados</h3><p>Intenta ajustar los filtros</p></div>';
+    return;
+  }
+  grid.innerHTML = data.map(renderCard).join('');
+}
+
+function resetFilters() {
+  filters = {search:'', ubicacion:'', luz:'', dimmer:'', tamano:'', aspas:'', control:'', cfmMin:'', cert:''};
+  document.getElementById('search').value = '';
+  document.getElementById('filter-tamano').value = '';
+  document.getElementById('filter-aspas').value = '';
+  document.getElementById('filter-control').value = '';
+  document.getElementById('filter-cert').value = '';
+  document.getElementById('filter-cfm-min').value = '';
+  document.querySelectorAll('[data-filter]').forEach(function(p) {
+    p.classList.toggle('active', p.dataset.val === '');
+  });
+  render();
+}
+
+document.getElementById('search').addEventListener('input', function(e) {
+  filters.search = e.target.value;
+  render();
+});
+
+document.querySelectorAll('[data-filter]').forEach(function(pill) {
+  pill.addEventListener('click', function() {
+    var f = pill.dataset.filter, v = pill.dataset.val;
+    document.querySelectorAll('[data-filter="' + f + '"]').forEach(function(p) { p.classList.remove('active'); });
+    pill.classList.add('active');
+    filters[f] = v;
+    render();
+  });
+});
+
+['filter-tamano','filter-aspas','filter-control','filter-cert'].forEach(function(id) {
+  document.getElementById(id).addEventListener('change', function(e) {
+    var key = id.replace('filter-','');
+    filters[key] = e.target.value;
+    render();
+  });
+});
+
+document.getElementById('filter-cfm-min').addEventListener('input', function(e) {
+  filters.cfmMin = e.target.value;
+  render();
+});
+
+document.querySelectorAll('.sort-btn').forEach(function(btn) {
+  btn.addEventListener('click', function() {
+    var field = btn.dataset.sort;
+    if (sortField === field) sortDir *= -1;
+    else { sortField = field; sortDir = -1; }
+    document.querySelectorAll('.sort-btn').forEach(function(b) {
+      b.classList.remove('active');
+      b.querySelector('.sort-arrow').textContent = '\u2195';
+    });
+    btn.classList.add('active');
+    btn.querySelector('.sort-arrow').textContent = sortDir === -1 ? '\u2193' : '\u2191';
+    render();
+  });
+});
+
+populateSelects();
+document.getElementById('total-count').textContent = DATA.length;
+render();
+</script>
+</body>
+</html>
