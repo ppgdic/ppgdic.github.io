@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Pisos & Revestimientos</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f4f2ee;
+    --surface: #ffffff;
+    --surface2: #f0ede8;
+    --border: #ddd9d2;
+    --accent: #c9971e;
+    --accent2: #b5841a;
+    --accent-light: #fdf3df;
+    --text: #1c1a17;
+    --text2: #7a756c;
+    --red: #c94b38;
+    --red-light: #fdf0ee;
+    --green: #2e9e58;
+    --green-light: #edf7f2;
+    --blue: #2d7ec4;
+    --blue-light: #edf4fc;
+    --radius: 14px;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; padding-bottom: 60px; }
+
+  header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 15px 20px; display: flex; align-items: center; gap: 13px; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 6px rgba(0,0,0,0.07); }
+  .logo-icon { width: 38px; height: 38px; background: var(--accent); border-radius: 10px; display: grid; grid-template-columns: 1fr 1fr; gap: 3px; padding: 6px; flex-shrink: 0; }
+  .logo-icon span { background: #fff; border-radius: 2px; display: block; }
+  header h1 { font-family: 'Syne', sans-serif; font-size: 1.1rem; font-weight: 700; letter-spacing: -0.3px; }
+  header p { font-size: 0.74rem; color: var(--text2); margin-top: 1px; }
+
+  .tabs { display: flex; background: var(--surface); border-bottom: 2px solid var(--border); overflow-x: auto; scrollbar-width: none; }
+  .tabs::-webkit-scrollbar { display: none; }
+  .tab-btn { padding: 13px 22px; background: none; border: none; color: var(--text2); font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 500; cursor: pointer; white-space: nowrap; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all 0.2s; }
+  .tab-btn.active { color: var(--accent); border-bottom-color: var(--accent); font-weight: 600; }
+
+  .container { max-width: 700px; margin: 0 auto; padding: 20px 14px; }
+  .panel { display: none; }
+  .panel.active { display: block; }
+
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); padding: 18px; margin-bottom: 13px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  .card-title { font-family: 'Syne', sans-serif; font-size: 0.83rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: var(--accent); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+  .badge { background: var(--accent-light); color: var(--accent); border: 1px solid rgba(201,151,30,0.3); font-size: 0.62rem; padding: 2px 7px; border-radius: 20px; font-family: 'DM Sans', sans-serif; font-weight: 600; text-transform: none; letter-spacing: 0; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; margin-bottom: 11px; }
+  .form-row.full { grid-template-columns: 1fr; }
+  .field { display: flex; flex-direction: column; gap: 5px; }
+  label { font-size: 0.76rem; color: var(--text2); font-weight: 500; }
+  input, select { background: var(--surface2); border: 1.5px solid var(--border); border-radius: 8px; color: var(--text); padding: 9px 11px; font-family: 'DM Sans', sans-serif; font-size: 0.89rem; outline: none; transition: border-color 0.18s, background 0.18s; width: 100%; }
+  input:focus, select:focus { border-color: var(--accent); background: #fff; }
+  select option { background: #fff; }
+
+  .radio-group { display: flex; gap: 6px; flex-wrap: wrap; }
+  .radio-opt { flex: 1; min-width: 50px; }
+  .radio-opt input[type="radio"] { display: none; }
+  .radio-opt label { display: block; padding: 8px 5px; background: var(--surface2); border: 1.5px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 0.81rem; text-align: center; transition: all 0.18s; color: var(--text2); font-weight: 500; }
+  .radio-opt input[type="radio"]:checked + label { background: var(--accent); color: #fff; border-color: var(--accent); font-weight: 600; }
+
+  .wall-list, .door-list { display: flex; flex-direction: column; gap: 9px; margin-bottom: 11px; }
+  .wall-item { background: var(--surface2); border: 1.5px solid var(--border); border-radius: 10px; padding: 13px; display: grid; grid-template-columns: 1fr 1fr auto; gap: 9px; align-items: end; }
+  .wall-label { grid-column: 1/-1; font-size: 0.77rem; color: var(--accent); font-weight: 700; margin-bottom: -3px; font-family: 'Syne', sans-serif; }
+  .door-item { background: var(--red-light); border: 1.5px solid rgba(201,75,56,0.2); border-radius: 10px; padding: 13px; display: grid; grid-template-columns: 1fr 1fr auto; gap: 9px; align-items: end; }
+  .door-label { grid-column: 1/-1; font-size: 0.77rem; color: var(--red); font-weight: 700; margin-bottom: -3px; font-family: 'Syne', sans-serif; }
+
+  .btn-remove { background: rgba(201,75,56,0.1); border: 1.5px solid rgba(201,75,56,0.25); color: var(--red); border-radius: 7px; width: 35px; height: 35px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 0.95rem; transition: all 0.18s; flex-shrink: 0; }
+  .btn-remove:hover { background: rgba(201,75,56,0.2); }
+  .btn { padding: 10px 15px; border-radius: 9px; border: none; font-family: 'DM Sans', sans-serif; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all 0.18s; display: flex; align-items: center; gap: 6px; justify-content: center; }
+  .btn-secondary { background: var(--surface2); border: 1.5px solid var(--border); color: var(--text); }
+  .btn-secondary:hover { border-color: var(--accent); color: var(--accent); background: var(--accent-light); }
+  .btn-door { background: var(--red-light); border: 1.5px solid rgba(201,75,56,0.25); color: var(--red); }
+  .btn-door:hover { background: rgba(201,75,56,0.15); border-color: var(--red); }
+  .btn-primary { background: var(--accent); color: #fff; width: 100%; padding: 14px; font-size: 1rem; font-weight: 700; border-radius: var(--radius); margin-top: 6px; font-family: 'Syne', sans-serif; box-shadow: 0 3px 10px rgba(201,151,30,0.28); }
+  .btn-primary:hover { background: var(--accent2); }
+  .btn-row { display: flex; gap: 9px; }
+
+  .results-area { margin-top: 18px; animation: fadeUp 0.3s ease; }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+  .result-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; margin-bottom: 11px; box-shadow: 0 1px 4px rgba(0,0,0,0.04); }
+  .result-header { background: var(--surface2); padding: 10px 16px; display: flex; align-items: center; gap: 9px; border-bottom: 1px solid var(--border); }
+  .result-icon { width: 30px; height: 30px; border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 0.95rem; }
+  .result-icon.yellow { background: var(--accent-light); }
+  .result-icon.green { background: var(--green-light); }
+  .result-icon.blue { background: var(--blue-light); }
+  .result-header h3 { font-family: 'Syne', sans-serif; font-size: 0.86rem; font-weight: 700; color: var(--text); }
+  .result-body { padding: 15px 16px; }
+  .result-main { font-family: 'Syne', sans-serif; font-size: 2.1rem; font-weight: 800; line-height: 1; margin-bottom: 3px; color: var(--text); }
+  .result-main .unit { font-size: 0.95rem; color: var(--text2); font-weight: 400; }
+  .result-sub { font-size: 0.8rem; color: var(--text2); margin-bottom: 13px; }
+  .result-detail { background: var(--surface2); border-radius: 9px; padding: 11px 13px; display: flex; flex-direction: column; gap: 7px; border: 1px solid var(--border); }
+  .detail-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.81rem; }
+  .detail-row .dk { color: var(--text2); }
+  .detail-row .dv { font-weight: 600; font-family: 'Syne', sans-serif; color: var(--text); }
+  .highlight-num { color: var(--accent) !important; }
+  .highlight-green { color: var(--green) !important; }
+  .highlight-blue { color: var(--blue) !important; }
+  .highlight-red { color: var(--red) !important; }
+  .divider { height: 1px; background: var(--border); margin: 2px 0; }
+
+  .summary-bar { background: var(--accent); color: #fff; border-radius: var(--radius); padding: 15px 18px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 11px; box-shadow: 0 3px 10px rgba(201,151,30,0.22); }
+  .sb-label { font-size: 0.81rem; font-weight: 600; opacity: 0.88; }
+  .sb-note { font-size: 0.71rem; opacity: 0.62; margin-top: 2px; }
+  .sb-val { font-family: 'Syne', sans-serif; font-size: 2rem; font-weight: 800; line-height: 1; }
+  .sb-unit { font-size: 0.8rem; font-weight: 500; opacity: 0.68; }
+
+  .info-chip { background: var(--blue-light); border: 1px solid rgba(45,126,196,0.2); border-radius: 8px; padding: 9px 13px; font-size: 0.79rem; color: var(--blue); margin-top: 9px; line-height: 1.5; }
+
+  .section-sep { display: flex; align-items: center; gap: 9px; margin: 5px 0 13px; }
+  .section-sep span { font-size: 0.71rem; color: var(--text2); white-space: nowrap; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; }
+  .section-sep::before, .section-sep::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+  .toggle-row { display: flex; align-items: center; justify-content: space-between; padding: 9px 0; border-top: 1px solid var(--border); margin-top: 5px; }
+  .toggle-label { font-size: 0.84rem; font-weight: 500; }
+  .toggle-sub { font-size: 0.74rem; color: var(--text2); margin-top: 2px; }
+  .toggle { width: 44px; height: 24px; background: var(--border); border-radius: 12px; position: relative; cursor: pointer; transition: background 0.2s; flex-shrink: 0; }
+  .toggle.on { background: var(--accent); }
+  .toggle::after { content: ''; position: absolute; width: 18px; height: 18px; background: #fff; border-radius: 50%; top: 3px; left: 3px; transition: transform 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,0.15); }
+  .toggle.on::after { transform: translateX(20px); }
+
+  .error-msg { background: var(--red-light); border: 1px solid rgba(201,75,56,0.3); border-radius: 9px; padding: 10px 13px; font-size: 0.81rem; color: var(--red); margin-top: 9px; }
+
+  .reset-link { text-align: center; margin-top: 14px; padding-bottom: 8px; }
+  .reset-link button { background: none; border: none; color: var(--text2); font-family: 'DM Sans', sans-serif; font-size: 0.81rem; cursor: pointer; text-decoration: underline; text-decoration-color: var(--border); }
+  .reset-link button:hover { color: var(--red); }
+
+  .ref-table { width: 100%; border-collapse: collapse; font-size: 0.81rem; }
+  .ref-table th { background: var(--surface2); color: var(--text2); font-weight: 600; padding: 8px 9px; text-align: left; font-size: 0.74rem; border-bottom: 1px solid var(--border); }
+  .ref-table td { padding: 8px 9px; border-bottom: 1px solid var(--border); }
+  .ref-table tr:last-child td { border-bottom: none; }
+  .ref-table tr:hover td { background: var(--surface2); }
+
+  /* BIDIRECTIONAL PIECE CALCULATOR */
+  .bidir-row {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 8px;
+    align-items: start;
+    background: var(--surface2);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 13px 13px 11px;
+    margin-bottom: 0;
+    transition: border-color 0.2s;
+  }
+  .bidir-row:focus-within { border-color: var(--accent); }
+  .bidir-field { display: flex; flex-direction: column; gap: 5px; }
+  .bidir-field label { font-size: 0.76rem; color: var(--text2); font-weight: 500; }
+  .bidir-field input {
+    background: #fff;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    padding: 9px 10px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 0.89rem;
+    outline: none;
+    transition: border-color 0.18s;
+    width: 100%;
+  }
+  .bidir-field input:focus { border-color: var(--accent); }
+  .bidir-field input.computed {
+    background: var(--accent-light);
+    border-color: rgba(201,151,30,0.4);
+    color: var(--accent2);
+    font-weight: 600;
+  }
+  .bidir-hint {
+    font-size: 0.7rem;
+    color: var(--accent);
+    font-weight: 600;
+    min-height: 14px;
+    display: block;
+  }
+  .bidir-sep {
+    align-self: center;
+    margin-top: 20px;
+    font-size: 1rem;
+    color: var(--text2);
+    user-select: none;
+    font-weight: 600;
+  }
+
+  @media (max-width: 480px) {
+    .radio-opt { min-width: 44px; }
+    .wall-item, .door-item { grid-template-columns: 1fr 1fr auto; }
+    .btn-row { flex-direction: column; }
+    .bidir-row { grid-template-columns: 1fr auto 1fr; gap: 6px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo-icon"><span></span><span></span><span></span><span></span></div>
+  <div>
+    <h1>Calculadora de Revestimientos</h1>
+    <p>Pisos · Paredes · Bondex Plus · Fragua — Intaco CR</p>
+  </div>
+</header>
+
+<div class="tabs">
+  <button class="tab-btn active" onclick="switchTab('piso',this)">🪵 Piso / Ambiente</button>
+  <button class="tab-btn" onclick="switchTab('paredes',this)">🧱 Paredes</button>
+  <button class="tab-btn" onclick="switchTab('ayuda',this)">📐 Referencia</button>
+</div>
+
+<!-- ===== TAB PISO ===== -->
+<div class="panel active" id="tab-piso">
+ <div class="container">
+
+  <div class="card">
+   <div class="card-title">📏 Dimensiones del Ambiente</div>
+   <div class="form-row">
+    <div class="field"><label>Largo (m)</label><input type="number" id="p-largo" placeholder="Ej: 3.50" step="0.01" min="0"></div>
+    <div class="field"><label>Ancho (m)</label><input type="number" id="p-ancho" placeholder="Ej: 2.80" step="0.01" min="0"></div>
+   </div>
+   <div class="section-sep"><span>o ingresá el área directamente</span></div>
+   <div class="form-row full">
+    <div class="field"><label>Área total conocida (m²) — opcional</label><input type="number" id="p-area-directa" placeholder="Ej: 9.80" step="0.01" min="0"></div>
+   </div>
+   <div class="toggle-row">
+    <div><div class="toggle-label">Descontar recortes / obstáculos</div><div class="toggle-sub">Columnas, pedestales, muebles empotrados</div></div>
+    <div class="toggle" id="tog-recortes" onclick="toggleSwitch('tog-recortes','recortes-box')"></div>
+   </div>
+   <div id="recortes-box" style="display:none;margin-top:11px;">
+    <div class="form-row full"><div class="field"><label>Área a descontar (m²)</label><input type="number" id="p-descuento" placeholder="Ej: 0.50" step="0.01" min="0"></div></div>
+   </div>
+  </div>
+
+  <div class="card">
+   <div class="card-title">🪟 Datos de la Pieza</div>
+   <!-- Tamaño de la pieza — siempre requerido -->
+   <div class="form-row">
+    <div class="field"><label>Largo pieza (cm)</label><input type="number" id="p-pieza-l" placeholder="Ej: 60" step="0.1" min="0" oninput="syncPieza('p')"></div>
+    <div class="field"><label>Ancho pieza (cm)</label><input type="number" id="p-pieza-a" placeholder="Ej: 60" step="0.1" min="0" oninput="syncPieza('p')"></div>
+   </div>
+   <!-- Cálculo bidireccional: ingresá uno, el otro se calcula -->
+   <div class="bidir-row" id="p-bidir">
+    <div class="bidir-field">
+     <label>Piezas por caja</label>
+     <input type="number" id="p-piezas-caja" placeholder="Ej: 4" min="1" step="1" oninput="syncFromPiezas('p')">
+     <span class="bidir-hint" id="p-hint-piezas"></span>
+    </div>
+    <div class="bidir-sep">⇄</div>
+    <div class="bidir-field">
+     <label>m² por caja</label>
+     <input type="number" id="p-m2-caja" placeholder="Ej: 1.44" step="0.0001" min="0" oninput="syncFromM2('p')">
+     <span class="bidir-hint" id="p-hint-m2"></span>
+    </div>
+   </div>
+   <div class="form-row full" style="margin-top:11px;">
+    <div class="field"><label>% desperdicio de piezas</label>
+     <div class="radio-group">
+      <div class="radio-opt"><input type="radio" name="desp" id="d0" value="0"><label for="d0">0%</label></div>
+      <div class="radio-opt"><input type="radio" name="desp" id="d5" value="5"><label for="d5">5%</label></div>
+      <div class="radio-opt"><input type="radio" name="desp" id="d10" value="10" checked><label for="d10">10%</label></div>
+      <div class="radio-opt"><input type="radio" name="desp" id="d15" value="15"><label for="d15">15%</label></div>
+      <div class="radio-opt"><input type="radio" name="desp" id="d20" value="20"><label for="d20">20%</label></div>
+     </div>
+    </div>
+   </div>
+  </div>
+
+  <div class="card">
+   <div class="card-title">🪣 Bondex Plus <span class="badge">Intaco</span></div>
+   <div class="form-row">
+    <div class="field"><label>Presentación saco</label>
+     <div class="radio-group">
+      <div class="radio-opt"><input type="radio" name="bondex-p" id="bxp25" value="25" checked><label for="bxp25">25 kg</label></div>
+      <div class="radio-opt"><input type="radio" name="bondex-p" id="bxp40" value="40"><label for="bxp40">40 kg</label></div>
+     </div>
+    </div>
+    <div class="field"><label>Tamaño diente llaneta</label>
+     <select id="p-llaneta">
+      <option value="8.75">6×6 mm → ~8.75 m²/saco</option>
+      <option value="5.75">8×8 mm → ~5.75 m²/saco</option>
+      <option value="4.75" selected>10×10 mm → ~4.75 m²/saco</option>
+      <option value="3.75">13×13 mm → ~3.75 m²/saco</option>
+     </select>
+    </div>
+   </div>
+  </div>
+
+  <div class="card">
+   <div class="card-title">🔩 Fragua Groutex <span class="badge">Intaco</span></div>
+   <div class="form-row">
+    <div class="field"><label>Ancho de sisa (mm)</label>
+     <select id="p-sisa">
+      <option value="1">1 mm</option><option value="2" selected>2 mm</option><option value="3">3 mm</option>
+      <option value="6">6 mm</option><option value="9">9 mm</option><option value="13">13 mm</option>
+     </select>
+    </div>
+    <div class="field"><label>Tipo Groutex</label>
+     <select id="p-groutex-tipo">
+      <option value="fino">Groutex Fino (1.5–6 mm)</option>
+      <option value="rustico">Groutex Rústico (6–13 mm)</option>
+     </select>
+    </div>
+   </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="calcularPiso()">⚡ Calcular materiales</button>
+  <div id="piso-error" class="error-msg" style="display:none;"></div>
+  <div id="piso-results" class="results-area" style="display:none;"></div>
+ </div>
+</div>
+
+<!-- ===== TAB PAREDES ===== -->
+<div class="panel" id="tab-paredes">
+ <div class="container">
+
+  <div class="card">
+   <div class="card-title">🧱 Paredes a Revestir</div>
+   <p style="font-size:0.8rem;color:var(--text2);margin-bottom:13px;">Ingresá el alto y ancho de cada pared. Hasta 6 paredes.</p>
+   <div class="wall-list" id="wall-list"></div>
+   <button class="btn btn-secondary" id="btn-add-wall" onclick="agregarPared()" style="width:100%;">+ Agregar pared</button>
+  </div>
+
+  <div class="card">
+   <div class="card-title">🚪 Vanos — Puertas y Ventanas</div>
+   <p style="font-size:0.8rem;color:var(--text2);margin-bottom:13px;">Estas áreas se descontarán del total de paredes. Ingresá las medidas de cada puerta o ventana.</p>
+   <div class="door-list" id="door-list"></div>
+   <div class="btn-row">
+    <button class="btn btn-door" id="btn-add-door" onclick="agregarPuerta()" style="flex:1;">🚪 Agregar puerta / ventana</button>
+   </div>
+   <div style="margin-top:12px;">
+    <div class="section-sep"><span>área manual adicional</span></div>
+    <div class="form-row full"><div class="field"><label>Área extra a descontar (m²)</label><input type="number" id="w-vanos" placeholder="Ej: 0.80" step="0.01" min="0"></div></div>
+   </div>
+  </div>
+
+  <div class="card">
+   <div class="card-title">🪟 Datos de la Pieza</div>
+   <div class="form-row">
+    <div class="field"><label>Largo pieza (cm)</label><input type="number" id="w-pieza-l" placeholder="Ej: 30" step="0.1" min="0" oninput="syncPieza('w')"></div>
+    <div class="field"><label>Ancho pieza (cm)</label><input type="number" id="w-pieza-a" placeholder="Ej: 60" step="0.1" min="0" oninput="syncPieza('w')"></div>
+   </div>
+   <div class="bidir-row" id="w-bidir">
+    <div class="bidir-field">
+     <label>Piezas por caja</label>
+     <input type="number" id="w-piezas-caja" placeholder="Ej: 8" min="1" step="1" oninput="syncFromPiezas('w')">
+     <span class="bidir-hint" id="w-hint-piezas"></span>
+    </div>
+    <div class="bidir-sep">⇄</div>
+    <div class="bidir-field">
+     <label>m² por caja</label>
+     <input type="number" id="w-m2-caja" placeholder="Ej: 1.44" step="0.0001" min="0" oninput="syncFromM2('w')">
+     <span class="bidir-hint" id="w-hint-m2"></span>
+    </div>
+   </div>
+   <div class="form-row full" style="margin-top:11px;">
+    <div class="field"><label>% desperdicio de piezas</label>
+     <div class="radio-group">
+      <div class="radio-opt"><input type="radio" name="desp-w" id="dw0" value="0"><label for="dw0">0%</label></div>
+      <div class="radio-opt"><input type="radio" name="desp-w" id="dw5" value="5"><label for="dw5">5%</label></div>
+      <div class="radio-opt"><input type="radio" name="desp-w" id="dw10" value="10" checked><label for="dw10">10%</label></div>
+      <div class="radio-opt"><input type="radio" name="desp-w" id="dw15" value="15"><label for="dw15">15%</label></div>
+      <div class="radio-opt"><input type="radio" name="desp-w" id="dw20" value="20"><label for="dw20">20%</label></div>
+     </div>
+    </div>
+   </div>
+  </div>
+
+  <div class="card">
+   <div class="card-title">🪣 Bondex Plus <span class="badge">Intaco</span></div>
+   <div class="form-row">
+    <div class="field"><label>Presentación saco</label>
+     <div class="radio-group">
+      <div class="radio-opt"><input type="radio" name="bondex-w" id="bxw25" value="25" checked><label for="bxw25">25 kg</label></div>
+      <div class="radio-opt"><input type="radio" name="bondex-w" id="bxw40" value="40"><label for="bxw40">40 kg</label></div>
+     </div>
+    </div>
+    <div class="field"><label>Tamaño diente llaneta</label>
+     <select id="w-llaneta">
+      <option value="8.75">6×6 mm → ~8.75 m²/saco</option>
+      <option value="5.75">8×8 mm → ~5.75 m²/saco</option>
+      <option value="4.75" selected>10×10 mm → ~4.75 m²/saco</option>
+      <option value="3.75">13×13 mm → ~3.75 m²/saco</option>
+     </select>
+    </div>
+   </div>
+  </div>
+
+  <div class="card">
+   <div class="card-title">🔩 Fragua Groutex <span class="badge">Intaco</span></div>
+   <div class="form-row">
+    <div class="field"><label>Ancho de sisa (mm)</label>
+     <select id="w-sisa">
+      <option value="1">1 mm</option><option value="2" selected>2 mm</option><option value="3">3 mm</option>
+      <option value="6">6 mm</option><option value="9">9 mm</option><option value="13">13 mm</option>
+     </select>
+    </div>
+    <div class="field"><label>Tipo Groutex</label>
+     <select id="w-groutex-tipo">
+      <option value="fino">Groutex Fino (1.5–6 mm)</option>
+      <option value="rustico">Groutex Rústico (6–13 mm)</option>
+     </select>
+    </div>
+   </div>
+  </div>
+
+  <button class="btn btn-primary" onclick="calcularParedes()">⚡ Calcular materiales</button>
+  <div id="wall-error" class="error-msg" style="display:none;"></div>
+  <div id="wall-results" class="results-area" style="display:none;"></div>
+ </div>
+</div>
+
+<!-- ===== TAB REFERENCIA ===== -->
+<div class="panel" id="tab-ayuda">
+ <div class="container">
+  <div class="card">
+   <div class="card-title">📊 Bondex Plus — rendimiento saco 25 kg</div>
+   <table class="ref-table">
+    <thead><tr><th>Diente llaneta</th><th>Rendimiento</th><th>Saco 40 kg aprox.</th></tr></thead>
+    <tbody>
+     <tr><td>6×6 mm</td><td style="color:var(--green);font-weight:600;">8.5 – 9.0 m²</td><td>14 – 15 m²</td></tr>
+     <tr><td>8×8 mm</td><td style="color:var(--green);font-weight:600;">5.5 – 6.0 m²</td><td>9 – 10 m²</td></tr>
+     <tr><td>10×10 mm</td><td style="color:var(--accent);font-weight:600;">4.5 – 5.0 m²</td><td>7 – 8 m²</td></tr>
+     <tr><td>13×13 mm</td><td style="color:var(--red);font-weight:600;">3.5 – 4.0 m²</td><td>5.5 – 6.5 m²</td></tr>
+    </tbody>
+   </table>
+  </div>
+  <div class="card">
+   <div class="card-title">📊 Groutex Fino — m²/kg</div>
+   <p style="font-size:0.77rem;color:var(--text2);margin-bottom:11px;">Piezas 200–600 mm, espesor 8–10 mm</p>
+   <table class="ref-table">
+    <thead><tr><th>Pieza</th><th>Sisa 1mm</th><th>Sisa 2mm</th><th>Sisa 3mm</th><th>Sisa 6mm</th></tr></thead>
+    <tbody>
+     <tr><td>20×20 cm</td><td>6.6</td><td>3.3</td><td>2.2</td><td>1.1</td></tr>
+     <tr><td>30×30 cm</td><td>9.9</td><td>4.9</td><td>3.3</td><td>1.7</td></tr>
+     <tr><td>40×40 cm</td><td>11.7</td><td>5.8</td><td>3.9</td><td>2.0</td></tr>
+     <tr><td>50×50 cm</td><td>13.4</td><td>6.6</td><td>4.4</td><td>2.2</td></tr>
+     <tr><td>60×60 cm</td><td>16.1</td><td>7.9</td><td>5.3</td><td>2.6</td></tr>
+    </tbody>
+   </table>
+   <div class="info-chip" style="margin-top:10px;">Groutex Fino disponible en bolsas de 2 kg · 30 colores disponibles.</div>
+  </div>
+  <div class="card">
+   <div class="card-title">📊 Groutex Rústico — m²/kg</div>
+   <table class="ref-table">
+    <thead><tr><th>Pieza</th><th>Sisa 6mm</th><th>Sisa 9mm</th><th>Sisa 13mm</th></tr></thead>
+    <tbody>
+     <tr><td>20×20 cm</td><td>1.0</td><td>0.7</td><td>0.5</td></tr>
+     <tr><td>30×30 cm</td><td>1.6</td><td>1.0</td><td>0.7</td></tr>
+     <tr><td>40×40 cm</td><td>1.9</td><td>1.2</td><td>0.9</td></tr>
+     <tr><td>50×50 cm</td><td>2.1</td><td>1.4</td><td>1.0</td></tr>
+     <tr><td>60×60 cm</td><td>2.5</td><td>1.7</td><td>1.2</td></tr>
+    </tbody>
+   </table>
+  </div>
+  <div class="card">
+   <div class="card-title">💡 Consejos prácticos</div>
+   <div style="font-size:0.82rem;line-height:1.75;color:var(--text2);">
+    <p>• <b style="color:var(--text)">Pisos >60×60 cm</b>: usá Bondex Formato Grande o Blendmix (tixotrópico).</p>
+    <p>• <b style="color:var(--text)">Porcelanato</b>: requiere Bondex Plus o superior (con látex).</p>
+    <p>• <b style="color:var(--text)">Desperdicio 0%</b>: solo para superficies completamente regulares, sin cortes ni diagonales.</p>
+    <p>• <b style="color:var(--text)">Desperdicio 15–20%</b>: instalación en diagonal o espacios muy irregulares.</p>
+    <p>• Fuente: <b style="color:var(--accent)">Intaco Costa Rica</b> — Folleto oficial Bondex / Groutex.</p>
+   </div>
+  </div>
+ </div>
+</div>
+
+<script>
+// ====== STATE ======
+let walls = [], doors = [];
+let wallCount = 0, doorCount = 0;
+const wallNames = ['Pared A','Pared B','Pared C','Pared D','Pared E','Pared F'];
+const doorNames = ['Puerta/Ventana 1','Puerta/Ventana 2','Puerta/Ventana 3','Puerta/Ventana 4'];
+
+document.addEventListener('DOMContentLoaded', () => { agregarPared(); agregarPared(); });
+
+function switchTab(name, btn) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('tab-'+name).classList.add('active');
+  btn.classList.add('active');
+}
+
+function toggleSwitch(id, boxId) {
+  const el = document.getElementById(id);
+  el.classList.toggle('on');
+  if (boxId) document.getElementById(boxId).style.display = el.classList.contains('on') ? 'block' : 'none';
+}
+
+// ====== BIDIRECTIONAL PIECE SYNC ======
+// Guard flags to avoid infinite loops
+let _syncing = {};
+
+function m2PiezaActual(prefix) {
+  const l = parseFloat(document.getElementById(prefix+'-pieza-l').value) || 0;
+  const a = parseFloat(document.getElementById(prefix+'-pieza-a').value) || 0;
+  return (l > 0 && a > 0) ? (l/100) * (a/100) : null;
+}
+
+// Called when tamaño de pieza changes → recalculate the computed field
+function syncPieza(prefix) {
+  const m2p = m2PiezaActual(prefix);
+  const fPiezas = document.getElementById(prefix+'-piezas-caja');
+  const fM2    = document.getElementById(prefix+'-m2-caja');
+  const hPiezas = document.getElementById(prefix+'-hint-piezas');
+  const hM2    = document.getElementById(prefix+'-hint-m2');
+
+  if (!m2p) { clearComputed(prefix); return; }
+
+  const piezas = parseFloat(fPiezas.value) || 0;
+  const m2c    = parseFloat(fM2.value) || 0;
+
+  if (piezas > 0 && !fPiezas.classList.contains('computed')) {
+    // piezas was manually entered → recompute m²/caja
+    const calc = m2p * piezas;
+    _syncing[prefix] = true;
+    fM2.value = calc.toFixed(4);
+    fM2.classList.add('computed');
+    hM2.textContent = `← ${piezas} pz × ${m2p.toFixed(4)} m²`;
+    fPiezas.classList.remove('computed');
+    hPiezas.textContent = '';
+    _syncing[prefix] = false;
+  } else if (m2c > 0 && !fM2.classList.contains('computed')) {
+    // m²/caja was manually entered → recompute piezas
+    const calc = m2c / m2p;
+    _syncing[prefix] = true;
+    fPiezas.value = Math.round(calc);
+    fPiezas.classList.add('computed');
+    hPiezas.textContent = `← ${m2c} m² ÷ ${m2p.toFixed(4)} m²`;
+    fM2.classList.remove('computed');
+    hM2.textContent = '';
+    _syncing[prefix] = false;
+  }
+}
+
+// User typed in piezas/caja → compute m²/caja
+function syncFromPiezas(prefix) {
+  if (_syncing[prefix]) return;
+  const m2p = m2PiezaActual(prefix);
+  const fPiezas = document.getElementById(prefix+'-piezas-caja');
+  const fM2    = document.getElementById(prefix+'-m2-caja');
+  const hPiezas = document.getElementById(prefix+'-hint-piezas');
+  const hM2    = document.getElementById(prefix+'-hint-m2');
+
+  const piezas = parseFloat(fPiezas.value) || 0;
+  fPiezas.classList.remove('computed');
+  hPiezas.textContent = '';
+
+  if (piezas > 0 && m2p) {
+    _syncing[prefix] = true;
+    const calc = m2p * piezas;
+    fM2.value = calc.toFixed(4);
+    fM2.classList.add('computed');
+    hM2.textContent = `= ${piezas} pz × ${(m2p*10000/100).toFixed(0)} cm² = ${calc.toFixed(4)} m²`;
+    _syncing[prefix] = false;
+  } else {
+    fM2.classList.remove('computed');
+    hM2.textContent = '';
+    if (!m2p) hPiezas.textContent = 'Ingresá el tamaño de la pieza primero';
+  }
+}
+
+// User typed in m²/caja → compute piezas
+function syncFromM2(prefix) {
+  if (_syncing[prefix]) return;
+  const m2p = m2PiezaActual(prefix);
+  const fPiezas = document.getElementById(prefix+'-piezas-caja');
+  const fM2    = document.getElementById(prefix+'-m2-caja');
+  const hPiezas = document.getElementById(prefix+'-hint-piezas');
+  const hM2    = document.getElementById(prefix+'-hint-m2');
+
+  const m2c = parseFloat(fM2.value) || 0;
+  fM2.classList.remove('computed');
+  hM2.textContent = '';
+
+  if (m2c > 0 && m2p) {
+    _syncing[prefix] = true;
+    const calc = Math.round(m2c / m2p);
+    fPiezas.value = calc;
+    fPiezas.classList.add('computed');
+    hPiezas.textContent = `= ${m2c} m² ÷ ${m2p.toFixed(4)} m² = ${calc} pz`;
+    _syncing[prefix] = false;
+  } else {
+    fPiezas.classList.remove('computed');
+    hPiezas.textContent = '';
+    if (!m2p) hM2.textContent = 'Ingresá el tamaño de la pieza primero';
+  }
+}
+
+function clearComputed(prefix) {
+  ['piezas-caja','m2-caja'].forEach(f => {
+    const el = document.getElementById(prefix+'-'+f);
+    if (el) el.classList.remove('computed');
+  });
+  ['hint-piezas','hint-m2'].forEach(h => {
+    const el = document.getElementById(prefix+'-'+h);
+    if (el) el.textContent = '';
+  });
+}
+
+// ====== PAREDES ======
+function agregarPared() {
+  if (walls.length >= 6) return;
+  wallCount++;
+  const id = 'pw'+wallCount;
+  walls.push(id);
+  const idx = walls.length - 1;
+  const div = document.createElement('div');
+  div.className = 'wall-item';
+  div.id = 'wall-item-'+id;
+  div.innerHTML = `<div class="wall-label">${wallNames[idx]}</div>
+    <div class="field"><label>Alto (m)</label><input type="number" id="wh-${id}" placeholder="Ej: 2.40" step="0.01" min="0"></div>
+    <div class="field"><label>Ancho (m)</label><input type="number" id="ww-${id}" placeholder="Ej: 3.20" step="0.01" min="0"></div>
+    <button class="btn-remove" onclick="quitarPared('${id}')">✕</button>`;
+  document.getElementById('wall-list').appendChild(div);
+  if (walls.length >= 6) document.getElementById('btn-add-wall').style.display = 'none';
+}
+
+function quitarPared(id) {
+  walls = walls.filter(w => w !== id);
+  document.getElementById('wall-item-'+id)?.remove();
+  document.getElementById('btn-add-wall').style.display = 'block';
+  document.querySelectorAll('#wall-list .wall-label').forEach((l,i) => l.textContent = wallNames[i]||`Pared ${i+1}`);
+}
+
+// ====== PUERTAS ======
+function agregarPuerta() {
+  if (doors.length >= 4) return;
+  doorCount++;
+  const id = 'dr'+doorCount;
+  doors.push(id);
+  const idx = doors.length - 1;
+  const div = document.createElement('div');
+  div.className = 'door-item';
+  div.id = 'door-item-'+id;
+  div.innerHTML = `<div class="door-label">🚪 ${doorNames[idx]||'Vano '+(idx+1)}</div>
+    <div class="field"><label>Alto (m)</label><input type="number" id="dh-${id}" placeholder="Ej: 2.10" step="0.01" min="0"></div>
+    <div class="field"><label>Ancho (m)</label><input type="number" id="dw-${id}" placeholder="Ej: 0.90" step="0.01" min="0"></div>
+    <button class="btn-remove" onclick="quitarPuerta('${id}')">✕</button>`;
+  document.getElementById('door-list').appendChild(div);
+  if (doors.length >= 4) document.getElementById('btn-add-door').style.display = 'none';
+}
+
+function quitarPuerta(id) {
+  doors = doors.filter(d => d !== id);
+  document.getElementById('door-item-'+id)?.remove();
+  document.getElementById('btn-add-door').style.display = 'flex';
+}
+
+// ====== HELPERS ======
+function radio(name) { return parseFloat(document.querySelector(`input[name="${name}"]:checked`)?.value||10); }
+
+function groutexRend(tipoId, sisa, pL, pA) {
+  const tf = {200:{1:6.6,2:3.3,3:2.2,6:1.1},300:{1:9.9,2:4.9,3:3.3,6:1.7},400:{1:11.7,2:5.8,3:3.9,6:2.0},500:{1:13.4,2:6.6,3:4.4,6:2.2},600:{1:16.1,2:7.9,3:5.3,6:2.6}};
+  const tr = {200:{6:1.0,9:0.7,13:0.5},300:{6:1.6,9:1.0,13:0.7},400:{6:1.9,9:1.2,13:0.9},500:{6:2.1,9:1.4,13:1.0},600:{6:2.5,9:1.7,13:1.2}};
+  const tipo = document.getElementById(tipoId).value;
+  const tabla = tipo==='fino' ? tf : tr;
+  const dimMm = Math.max(pL,pA)*10;
+  const claves = Object.keys(tabla).map(Number).sort((a,b)=>a-b);
+  let cv = claves[0]; for (const c of claves) if (dimMm>=c) cv=c;
+  const sisas = Object.keys(tabla[cv]).map(Number).sort((a,b)=>a-b);
+  let sv = sisas[0]; for (const s of sisas) if (sisa>=s) sv=s;
+  return { rendKg: tabla[cv][sv]||2.5, tipo, cv };
+}
+
+function buildCajasHTML(areaConDesp, areaNeta, descRows, m2Caja, piezasPC, piezaL, piezaA, despPct, icon, titulo) {
+  if (m2Caja > 0) {
+    const cajas = Math.ceil(areaConDesp / m2Caja);
+    let ppCaja = piezasPC;
+    if (!ppCaja && piezaL && piezaA) ppCaja = Math.round(m2Caja / ((piezaL/100)*(piezaA/100)));
+    const piezasTot = ppCaja ? cajas * ppCaja : null;
+    const m2p = piezaL && piezaA ? (piezaL/100)*(piezaA/100) : null;
+    return `<div class="result-card">
+      <div class="result-header"><div class="result-icon yellow">${icon}</div><h3>${titulo}</h3></div>
+      <div class="result-body">
+        <div class="result-main"><span class="highlight-num">${cajas}</span> <span class="unit">cajas</span></div>
+        <div class="result-sub">Incluye ${despPct}% desperdicio${despPct==0?' (sin margen)':''}</div>
+        <div class="result-detail">
+          ${descRows}
+          <div class="divider"></div>
+          <div class="detail-row"><span class="dk">m² por caja</span><span class="dv">${m2Caja.toFixed(4)} m²</span></div>
+          ${m2p?`<div class="detail-row"><span class="dk">m² por pieza</span><span class="dv">${m2p.toFixed(4)} m²</span></div>`:''}
+          ${piezasTot?`<div class="divider"></div><div class="detail-row"><span class="dk">Piezas totales</span><span class="dv highlight-num">${piezasTot} piezas</span></div>`:''}
+          ${ppCaja?`<div class="detail-row"><span class="dk">Piezas por caja</span><span class="dv">${ppCaja} pz/caja</span></div>`:''}
+        </div>
+      </div>
+    </div>`;
+  } else {
+    return `<div class="result-card">
+      <div class="result-header"><div class="result-icon yellow">${icon}</div><h3>Área a cotizar</h3></div>
+      <div class="result-body">
+        <div class="result-main"><span class="highlight-num">${areaConDesp.toFixed(2)}</span> <span class="unit">m²</span></div>
+        <div class="result-sub">Ingresá piezas/caja y tamaño de pieza para calcular cajas y piezas</div>
+        <div class="result-detail">${descRows}</div>
+      </div>
+    </div>`;
+  }
+}
+
+// ====== CALCULAR PISO ======
+function calcularPiso() {
+  const errDiv = document.getElementById('piso-error');
+  const resDiv = document.getElementById('piso-results');
+  errDiv.style.display = 'none'; resDiv.style.display = 'none';
+
+  const largo = parseFloat(document.getElementById('p-largo').value)||0;
+  const ancho = parseFloat(document.getElementById('p-ancho').value)||0;
+  const aDir  = parseFloat(document.getElementById('p-area-directa').value)||0;
+  let desc = 0;
+  if (document.getElementById('tog-recortes').classList.contains('on'))
+    desc = parseFloat(document.getElementById('p-descuento').value)||0;
+
+  let areaBase = aDir>0 ? aDir : (largo>0&&ancho>0 ? largo*ancho : 0);
+  if (!areaBase) { errDiv.textContent='Ingresá el largo y ancho, o el área directa.'; errDiv.style.display='block'; return; }
+
+  const areaNeta = Math.max(areaBase - desc, 0);
+  const pL = parseFloat(document.getElementById('p-pieza-l').value)||0;
+  const pA = parseFloat(document.getElementById('p-pieza-a').value)||0;
+  let m2c = parseFloat(document.getElementById('p-m2-caja').value)||0;
+  const pc = parseInt(document.getElementById('p-piezas-caja').value)||0;
+  const desp = radio('desp');
+  if (!m2c && pL && pA && pc) m2c = (pL/100)*(pA/100)*pc;
+
+  const aCD = areaNeta * (1+desp/100);
+  const rendLL = parseFloat(document.getElementById('p-llaneta').value);
+  const bSaco = radio('bondex-p');
+  const rendR = bSaco===40 ? rendLL*1.6 : rendLL;
+  const sacosB = Math.ceil(aCD/rendR);
+
+  const sisa = parseInt(document.getElementById('p-sisa').value);
+  let rG = {rendKg:2.5,tipo:'fino',cv:400};
+  if (pL&&pA) rG = groutexRend('p-groutex-tipo', sisa, pL, pA);
+  const kgF = aCD/rG.rendKg;
+  const bolsas = Math.ceil(kgF/2);
+
+  const descRows = `<div class="detail-row"><span class="dk">Área neta</span><span class="dv">${areaNeta.toFixed(2)} m²</span></div>
+    <div class="detail-row"><span class="dk">Área con desperdicio</span><span class="dv highlight-num">${aCD.toFixed(2)} m²</span></div>`;
+
+  resDiv.innerHTML = `
+    <div class="summary-bar">
+      <div><div class="sb-label">Área del ambiente</div><div class="sb-note">${largo>0?`${largo}×${ancho} m`:'área directa'}${desc>0?` − ${desc} m² desc.`:''}</div></div>
+      <div style="text-align:right;"><div class="sb-val">${areaNeta.toFixed(2)}</div><div class="sb-unit">m² netos</div></div>
+    </div>
+    ${buildCajasHTML(aCD, areaNeta, descRows, m2c, pc, pL, pA, desp, '🪵', 'Piso / Porcelanato — Cajas')}
+    <div class="result-card">
+      <div class="result-header"><div class="result-icon green">🪣</div><h3>Bondex Plus ${bSaco} kg</h3></div>
+      <div class="result-body">
+        <div class="result-main"><span class="highlight-green">${sacosB}</span> <span class="unit">sacos</span></div>
+        <div class="result-sub">Saco de ${bSaco} kg</div>
+        <div class="result-detail">
+          <div class="detail-row"><span class="dk">Rendimiento por saco</span><span class="dv">${rendR.toFixed(1)} m²</span></div>
+          <div class="detail-row"><span class="dk">Área a pegar</span><span class="dv">${aCD.toFixed(2)} m²</span></div>
+          <div class="detail-row"><span class="dk">Sacos exactos</span><span class="dv">${(aCD/rendR).toFixed(2)}</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="result-card">
+      <div class="result-header"><div class="result-icon blue">🔩</div><h3>Groutex ${rG.tipo==='fino'?'Fino':'Rústico'} — bolsas 2 kg</h3></div>
+      <div class="result-body">
+        <div class="result-main"><span class="highlight-blue">${bolsas}</span> <span class="unit">bolsas</span></div>
+        <div class="result-sub">Bolsas de 2 kg · Sisa ${sisa} mm</div>
+        <div class="result-detail">
+          <div class="detail-row"><span class="dk">Rendimiento</span><span class="dv">${rG.rendKg.toFixed(1)} m²/kg</span></div>
+          <div class="detail-row"><span class="dk">kg necesarios</span><span class="dv">${kgF.toFixed(2)} kg</span></div>
+          <div class="detail-row"><span class="dk">Pieza ref.</span><span class="dv">${rG.cv/10}×${rG.cv/10} cm</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="info-chip">⚠️ Rendimientos basados en fichas oficiales de Intaco Costa Rica. Pedí siempre un 5–10% extra de materiales.</div>
+    <div class="reset-link"><button onclick="resetPiso()">🔄 Limpiar y recalcular</button></div>`;
+  resDiv.style.display='block';
+  resDiv.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ====== CALCULAR PAREDES ======
+function calcularParedes() {
+  const errDiv = document.getElementById('wall-error');
+  const resDiv = document.getElementById('wall-results');
+  errDiv.style.display='none'; resDiv.style.display='none';
+  if (!walls.length) { errDiv.textContent='Agregá al menos una pared.'; errDiv.style.display='block'; return; }
+
+  let areaTotal=0; const wDets=[];
+  walls.forEach((id,idx)=>{
+    const h=parseFloat(document.getElementById('wh-'+id).value)||0;
+    const w=parseFloat(document.getElementById('ww-'+id).value)||0;
+    if(h>0&&w>0){const a=h*w;areaTotal+=a;wDets.push({name:wallNames[idx]||`Pared ${idx+1}`,h,w,a});}
+  });
+  if(!wDets.length){errDiv.textContent='Ingresá alto y ancho de al menos una pared.';errDiv.style.display='block';return;}
+
+  let areaDoors=0; const dDets=[];
+  doors.forEach((id,idx)=>{
+    const h=parseFloat(document.getElementById('dh-'+id).value)||0;
+    const w=parseFloat(document.getElementById('dw-'+id).value)||0;
+    if(h>0&&w>0){const a=h*w;areaDoors+=a;dDets.push({name:doorNames[idx]||`Vano ${idx+1}`,h,w,a});}
+  });
+  const vanosM = parseFloat(document.getElementById('w-vanos').value)||0;
+  const totalVanos = areaDoors + vanosM;
+  const areaNeta = Math.max(areaTotal - totalVanos, 0);
+
+  const pL=parseFloat(document.getElementById('w-pieza-l').value)||0;
+  const pA=parseFloat(document.getElementById('w-pieza-a').value)||0;
+  let m2c=parseFloat(document.getElementById('w-m2-caja').value)||0;
+  const pc=parseInt(document.getElementById('w-piezas-caja').value)||0;
+  const desp=radio('desp-w');
+  if(!m2c&&pL&&pA&&pc) m2c=(pL/100)*(pA/100)*pc;
+
+  const aCD = areaNeta*(1+desp/100);
+  const rendLL=parseFloat(document.getElementById('w-llaneta').value);
+  const bSaco=radio('bondex-w');
+  const rendR=bSaco===40?rendLL*1.6:rendLL;
+  const sacosB=Math.ceil(aCD/rendR);
+
+  const sisa=parseInt(document.getElementById('w-sisa').value);
+  let rG={rendKg:2.5,tipo:'fino',cv:400};
+  if(pL&&pA) rG=groutexRend('w-groutex-tipo',sisa,pL,pA);
+  const kgF=aCD/rG.rendKg;
+  const bolsas=Math.ceil(kgF/2);
+
+  const wallRows = wDets.map(w=>`<div class="detail-row"><span class="dk">${w.name} (${w.h}×${w.w} m)</span><span class="dv">${w.a.toFixed(2)} m²</span></div>`).join('<div class="divider"></div>');
+
+  let doorBlock='';
+  if(dDets.length||vanosM>0){
+    const dr = dDets.map(d=>`<div class="detail-row"><span class="dk">🚪 ${d.name} (${d.h}×${d.w} m)</span><span class="dv highlight-red">− ${d.a.toFixed(2)} m²</span></div>`).join('<div class="divider"></div>');
+    const em = vanosM>0?`${dDets.length?'<div class="divider"></div>':''}<div class="detail-row"><span class="dk">Área manual extra</span><span class="dv highlight-red">− ${vanosM.toFixed(2)} m²</span></div>`:'';
+    doorBlock=`<div class="card" style="padding:15px 16px;margin-bottom:12px;"><div class="card-title" style="margin-bottom:10px;">🚪 Vanos descontados</div><div class="result-detail">${dr}${em}</div></div>`;
+  }
+
+  const descRows = `<div class="detail-row"><span class="dk">Área bruta paredes</span><span class="dv">${areaTotal.toFixed(2)} m²</span></div>
+    <div class="detail-row"><span class="dk">Menos vanos</span><span class="dv highlight-red">− ${totalVanos.toFixed(2)} m²</span></div>
+    <div class="detail-row"><span class="dk">Área neta</span><span class="dv">${areaNeta.toFixed(2)} m²</span></div>
+    <div class="detail-row"><span class="dk">Área con desperdicio</span><span class="dv highlight-num">${aCD.toFixed(2)} m²</span></div>`;
+
+  resDiv.innerHTML=`
+    <div class="summary-bar">
+      <div><div class="sb-label">${wDets.length} pared${wDets.length>1?'es':''} · ${dDets.length+( vanosM>0?1:0)} vano${dDets.length+(vanosM>0?1:0)!==1?'s':''} descontado${dDets.length+(vanosM>0?1:0)!==1?'s':''}</div>
+      <div class="sb-note">Descontado ${totalVanos.toFixed(2)} m² de vanos</div></div>
+      <div style="text-align:right;"><div class="sb-val">${areaNeta.toFixed(2)}</div><div class="sb-unit">m² netos</div></div>
+    </div>
+    <div class="card" style="padding:15px 16px;margin-bottom:12px;"><div class="card-title" style="margin-bottom:10px;">📋 Detalle por pared</div><div class="result-detail">${wallRows}</div></div>
+    ${doorBlock}
+    ${buildCajasHTML(aCD, areaNeta, descRows, m2c, pc, pL, pA, desp, '🧱', 'Azulejo / Porcelanato — Cajas')}
+    <div class="result-card">
+      <div class="result-header"><div class="result-icon green">🪣</div><h3>Bondex Plus ${bSaco} kg</h3></div>
+      <div class="result-body">
+        <div class="result-main"><span class="highlight-green">${sacosB}</span> <span class="unit">sacos</span></div>
+        <div class="result-sub">Saco de ${bSaco} kg</div>
+        <div class="result-detail">
+          <div class="detail-row"><span class="dk">Rendimiento por saco</span><span class="dv">${rendR.toFixed(1)} m²</span></div>
+          <div class="detail-row"><span class="dk">Área a pegar</span><span class="dv">${aCD.toFixed(2)} m²</span></div>
+          <div class="detail-row"><span class="dk">Sacos exactos</span><span class="dv">${(aCD/rendR).toFixed(2)}</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="result-card">
+      <div class="result-header"><div class="result-icon blue">🔩</div><h3>Groutex ${rG.tipo==='fino'?'Fino':'Rústico'} — bolsas 2 kg</h3></div>
+      <div class="result-body">
+        <div class="result-main"><span class="highlight-blue">${bolsas}</span> <span class="unit">bolsas</span></div>
+        <div class="result-sub">Bolsas de 2 kg · Sisa ${sisa} mm</div>
+        <div class="result-detail">
+          <div class="detail-row"><span class="dk">Rendimiento</span><span class="dv">${rG.rendKg.toFixed(1)} m²/kg</span></div>
+          <div class="detail-row"><span class="dk">kg necesarios</span><span class="dv">${kgF.toFixed(2)} kg</span></div>
+          <div class="detail-row"><span class="dk">Pieza ref.</span><span class="dv">${rG.cv/10}×${rG.cv/10} cm</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="info-chip">⚠️ Rendimientos basados en fichas oficiales de Intaco Costa Rica. Pedí siempre un 5–10% extra de materiales.</div>
+    <div class="reset-link"><button onclick="resetParedes()">🔄 Limpiar y recalcular</button></div>`;
+  resDiv.style.display='block';
+  resDiv.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+// ====== RESET ======
+function resetPiso(){
+  ['p-largo','p-ancho','p-area-directa','p-descuento','p-pieza-l','p-pieza-a','p-piezas-caja','p-m2-caja'].forEach(id=>{const e=document.getElementById(id);if(e){e.value='';e.style.borderColor='';e.classList.remove('computed');}});
+  clearComputed('p');
+  document.getElementById('piso-results').style.display='none';
+  document.getElementById('piso-error').style.display='none';
+  const tog=document.getElementById('tog-recortes');
+  if(tog.classList.contains('on')){tog.classList.remove('on');document.getElementById('recortes-box').style.display='none';}
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function resetParedes(){
+  walls.forEach(id=>{['wh-','ww-'].forEach(p=>{const e=document.getElementById(p+id);if(e)e.value='';});});
+  doors.forEach(id=>{['dh-','dw-'].forEach(p=>{const e=document.getElementById(p+id);if(e)e.value='';});});
+  ['w-vanos','w-pieza-l','w-pieza-a','w-piezas-caja','w-m2-caja'].forEach(id=>{const e=document.getElementById(id);if(e){e.value='';e.style.borderColor='';e.classList.remove('computed');}});
+  clearComputed('w');
+  document.getElementById('wall-results').style.display='none';
+  document.getElementById('wall-error').style.display='none';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+</script>
+</body>
+</html>
