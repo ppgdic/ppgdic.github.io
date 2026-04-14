@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculadora de Palma Artificial</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg:       #F5F1EA;
+      --surface:  #FDFBF7;
+      --border:   #DDD8CE;
+      --accent:   #3A6B4A;
+      --accent-lt:#EAF2EC;
+      --accent-dk:#264A33;
+      --text-1:   #1C1C1A;
+      --text-2:   #5A5850;
+      --text-3:   #9A9488;
+      --result-bg:#264A33;
+      --result-fg:#E8F4EC;
+      --result-sub:#8FBA9A;
+      --shadow:   0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
+    }
+
+    body {
+      font-family: 'Sora', sans-serif;
+      background: var(--bg);
+      color: var(--text-1);
+      min-height: 100vh;
+      padding: 2rem 1rem 4rem;
+    }
+
+    /* Texture overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.018'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 520px;
+      margin: 0 auto;
+    }
+
+    /* Header */
+    .header {
+      margin-bottom: 2.5rem;
+      animation: fadeUp .5s ease both;
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--accent-lt);
+      color: var(--accent-dk);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      padding: 5px 12px;
+      border-radius: 100px;
+      margin-bottom: 1rem;
+      border: 1px solid #C2DCC9;
+    }
+
+    .leaf-icon {
+      width: 14px;
+      height: 14px;
+      fill: var(--accent);
+    }
+
+    .header h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(28px, 6vw, 38px);
+      font-weight: 400;
+      color: var(--text-1);
+      line-height: 1.15;
+      margin-bottom: .75rem;
+    }
+
+    .header h1 em {
+      font-style: italic;
+      color: var(--accent);
+    }
+
+    .header-meta {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12.5px;
+      color: var(--text-3);
+      font-family: 'DM Mono', monospace;
+    }
+
+    .header-meta span {
+      width: 3px;
+      height: 3px;
+      background: var(--text-3);
+      border-radius: 50%;
+    }
+
+    /* Tabs */
+    .tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      background: var(--border);
+      padding: 4px;
+      border-radius: 12px;
+      margin-bottom: 1.25rem;
+      animation: fadeUp .5s .08s ease both;
+    }
+
+    .tab {
+      padding: 10px 8px;
+      border: none;
+      border-radius: 9px;
+      font-family: 'Sora', sans-serif;
+      font-size: 13px;
+      font-weight: 400;
+      cursor: pointer;
+      transition: all .2s ease;
+      background: transparent;
+      color: var(--text-2);
+    }
+
+    .tab.active {
+      background: var(--surface);
+      color: var(--text-1);
+      font-weight: 500;
+      box-shadow: var(--shadow);
+    }
+
+    /* Cards */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      box-shadow: var(--shadow);
+      animation: fadeUp .5s .12s ease both;
+    }
+
+    .card-label {
+      font-size: 10.5px;
+      font-weight: 600;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 1.25rem;
+    }
+
+    .field {
+      margin-bottom: 1.1rem;
+    }
+
+    .field:last-child {
+      margin-bottom: 0;
+    }
+
+    .field label {
+      display: block;
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-2);
+      margin-bottom: 7px;
+    }
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* Inputs */
+    .input-wrap {
+      display: flex;
+      align-items: stretch;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      transition: border-color .15s, box-shadow .15s;
+      background: white;
+    }
+
+    .input-wrap:focus-within {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(58,107,74,.12);
+    }
+
+    .input-wrap input {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 11px 13px;
+      font-family: 'DM Mono', monospace;
+      font-size: 15px;
+      color: var(--text-1);
+      outline: none;
+      min-width: 0;
+    }
+
+    .input-wrap input::placeholder {
+      color: var(--text-3);
+      font-size: 13px;
+    }
+
+    .input-unit {
+      padding: 0 12px;
+      font-family: 'DM Mono', monospace;
+      font-size: 12px;
+      color: var(--text-3);
+      background: #F5F1EA;
+      border-left: 1.5px solid var(--border);
+      display: flex;
+      align-items: center;
+    }
+
+    /* Waste slider */
+    .waste-field {
+      background: #F9F7F2;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px;
+      margin-top: 1.1rem;
+    }
+
+    .waste-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .waste-header label {
+      font-size: 13px;
+      font-weight: 500;
+      color: var(--text-2);
+    }
+
+    .waste-val {
+      font-family: 'DM Mono', monospace;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--accent);
+      background: var(--accent-lt);
+      padding: 2px 10px;
+      border-radius: 100px;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      width: 100%;
+      height: 4px;
+      background: linear-gradient(to right, var(--accent) 0%, var(--accent) var(--pct, 20%), #D4D0C8 var(--pct, 20%), #D4D0C8 100%);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 18px;
+      height: 18px;
+      background: white;
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      box-shadow: 0 1px 4px rgba(0,0,0,.15);
+      transition: transform .1s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 18px;
+      height: 18px;
+      background: white;
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      cursor: pointer;
+    }
+
+    /* Results */
+    .results {
+      margin-top: 1rem;
+      animation: fadeUp .3s ease both;
+    }
+
+    .result-main {
+      background: var(--result-bg);
+      border-radius: 14px;
+      padding: 1.5rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      gap: 12px;
+    }
+
+    .result-main-left {
+      flex: 1;
+    }
+
+    .result-main-left .rlabel {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      color: var(--result-sub);
+      margin-bottom: 6px;
+    }
+
+    .result-main-left .rval {
+      font-family: 'DM Serif Display', serif;
+      font-size: 48px;
+      line-height: 1;
+      color: var(--result-fg);
+      letter-spacing: -.02em;
+    }
+
+    .result-main-left .rsub {
+      font-size: 12px;
+      color: var(--result-sub);
+      margin-top: 4px;
+    }
+
+    .result-main-right {
+      text-align: right;
+    }
+
+    .result-main-right .rlabel {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .09em;
+      text-transform: uppercase;
+      color: var(--result-sub);
+      margin-bottom: 6px;
+    }
+
+    .result-main-right .rval {
+      font-family: 'DM Mono', monospace;
+      font-size: 22px;
+      font-weight: 500;
+      color: var(--result-fg);
+    }
+
+    .result-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 10px;
+    }
+
+    .metric {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1rem 1.1rem;
+    }
+
+    .metric .mlabel {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 5px;
+    }
+
+    .metric .mval {
+      font-family: 'DM Mono', monospace;
+      font-size: 20px;
+      font-weight: 500;
+      color: var(--text-1);
+    }
+
+    .metric .msub {
+      font-size: 11px;
+      color: var(--text-3);
+      margin-top: 2px;
+    }
+
+    .note-box {
+      background: var(--accent-lt);
+      border: 1px solid #C2DCC9;
+      border-radius: 10px;
+      padding: 12px 14px;
+      font-size: 12.5px;
+      color: var(--accent-dk);
+      line-height: 1.6;
+    }
+
+    /* Section toggle */
+    .section { display: none; }
+    .section.visible { display: block; }
+
+    /* Footer */
+    .footer {
+      margin-top: 2.5rem;
+      text-align: center;
+      font-size: 11.5px;
+      color: var(--text-3);
+      font-family: 'DM Mono', monospace;
+      animation: fadeUp .5s .3s ease both;
+    }
+
+    /* Animation */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(10px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Responsive */
+    @media (max-width: 400px) {
+      .result-main { flex-direction: column; align-items: flex-start; }
+      .result-main-right { text-align: left; }
+      .grid-2 { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <div class="header">
+    <div class="header-badge">
+      <svg class="leaf-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M17 8C8 10 5.9 16.17 3.82 21.34L5.71 22l1-2.3A4.49 4.49 0 008 20C19 20 22 3 22 3c-1 2-8 2-14 5.91C7.16 9.61 6.47 10.39 6 11.17L4.27 7.58C4.1 7.21 3.7 7 3.29 7H2a1 1 0 000 2h.5l2.15 4.74A7.63 7.63 0 006 17.87 12.87 12.87 0 0117 8z"/>
+      </svg>
+      Palma Artificial
+    </div>
+    <h1>Calculadora de<br><em>techo de palma</em></h1>
+    <div class="header-meta">
+      36.6 cm × 27.6 cm por lámina
+      <span></span>
+      5 piezas = 1 m²
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('m2')">Por metros cuadrados</button>
+    <button class="tab" onclick="switchTab('dims')">Por largo × ancho</button>
+  </div>
+
+  <!-- Sección M2 -->
+  <section id="sec-m2" class="section visible">
+    <div class="card">
+      <div class="card-label">Área del proyecto</div>
+      <div class="field">
+        <label>Metros cuadrados requeridos</label>
+        <div class="input-wrap">
+          <input type="number" id="m2-input" min="0" step="0.01" placeholder="Ej: 25.50" oninput="calcM2()">
+          <div class="input-unit">m²</div>
+        </div>
+      </div>
+      <div class="waste-field">
+        <div class="waste-header">
+          <label for="waste1-range">Desperdicio por cortes</label>
+          <span class="waste-val" id="waste1-display">10%</span>
+        </div>
+        <input type="range" id="waste1-range" min="0" max="30" step="1" value="10"
+          oninput="updateWaste(this,'waste1-display');calcM2()" style="--pct:33.33%">
+      </div>
+    </div>
+    <div id="res-m2" class="results" style="display:none">
+      <div class="result-main">
+        <div class="result-main-left">
+          <div class="rlabel">Piezas necesarias</div>
+          <div class="rval" id="r1-piezas">—</div>
+          <div class="rsub" id="r1-sub">unidades</div>
+        </div>
+        <div class="result-main-right">
+          <div class="rlabel">Área total</div>
+          <div class="rval" id="r1-area">—</div>
+        </div>
+      </div>
+      <div class="note-box" id="r1-note"></div>
+    </div>
+  </section>
+
+  <!-- Sección Dimensiones -->
+  <section id="sec-dims" class="section">
+    <div class="card">
+      <div class="card-label">Dimensiones del área</div>
+      <div class="grid-2">
+        <div class="field">
+          <label>Largo</label>
+          <div class="input-wrap">
+            <input type="number" id="largo-input" min="0" step="0.01" placeholder="Ej: 8" oninput="calcDims()">
+            <div class="input-unit">m</div>
+          </div>
+        </div>
+        <div class="field">
+          <label>Ancho</label>
+          <div class="input-wrap">
+            <input type="number" id="ancho-input" min="0" step="0.01" placeholder="Ej: 5" oninput="calcDims()">
+            <div class="input-unit">m</div>
+          </div>
+        </div>
+      </div>
+      <div class="waste-field">
+        <div class="waste-header">
+          <label for="waste2-range">Desperdicio por cortes</label>
+          <span class="waste-val" id="waste2-display">10%</span>
+        </div>
+        <input type="range" id="waste2-range" min="0" max="30" step="1" value="10"
+          oninput="updateWaste(this,'waste2-display');calcDims()" style="--pct:33.33%">
+      </div>
+    </div>
+    <div id="res-dims" class="results" style="display:none">
+      <div class="result-main">
+        <div class="result-main-left">
+          <div class="rlabel">Piezas necesarias</div>
+          <div class="rval" id="r2-piezas">—</div>
+          <div class="rsub" id="r2-sub">unidades</div>
+        </div>
+        <div class="result-main-right">
+          <div class="rlabel">Con desperdicio</div>
+          <div class="rval" id="r2-area-desp">—</div>
+        </div>
+      </div>
+      <div class="result-row">
+        <div class="metric">
+          <div class="mlabel">Área neta</div>
+          <div class="mval" id="r2-area-neta">—</div>
+          <div class="msub">metros cuadrados</div>
+        </div>
+        <div class="metric">
+          <div class="mlabel">Piezas base</div>
+          <div class="mval" id="r2-piezas-base">—</div>
+          <div class="msub">sin desperdicio</div>
+        </div>
+      </div>
+      <div class="note-box" id="r2-note"></div>
+    </div>
+  </section>
+
+  <div class="footer">lámina: 36.6 × 27.6 cm &nbsp;·&nbsp; densidad: 5 pzas/m²</div>
+
+</div>
+
+<script>
+  const PIEZAS_M2 = 5;
+
+  function switchTab(t) {
+    document.querySelectorAll('.tab').forEach((b, i) => {
+      b.classList.toggle('active', (i === 0 && t === 'm2') || (i === 1 && t === 'dims'));
+    });
+    document.getElementById('sec-m2').classList.toggle('visible', t === 'm2');
+    document.getElementById('sec-dims').classList.toggle('visible', t === 'dims');
+  }
+
+  function updateWaste(el, displayId) {
+    const v = parseInt(el.value);
+    document.getElementById(displayId).textContent = v + '%';
+    const pct = (v / 30 * 100).toFixed(2) + '%';
+    el.style.setProperty('--pct', pct);
+  }
+
+  function fmt(n) {
+    return n.toLocaleString('es-CR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function calcM2() {
+    const m2 = parseFloat(document.getElementById('m2-input').value);
+    const waste = parseInt(document.getElementById('waste1-range').value) || 0;
+    const res = document.getElementById('res-m2');
+    if (!m2 || m2 <= 0) { res.style.display = 'none'; return; }
+
+    const areaTotal = m2 * (1 + waste / 100);
+    const piezas = Math.ceil(areaTotal * PIEZAS_M2);
+    const piezasBase = Math.ceil(m2 * PIEZAS_M2);
+    const extra = piezas - piezasBase;
+
+    document.getElementById('r1-piezas').textContent = piezas.toLocaleString('es-CR');
+    document.getElementById('r1-area').textContent = fmt(areaTotal) + ' m²';
+    document.getElementById('r1-sub').textContent = `${piezasBase.toLocaleString('es-CR')} base + ${extra} por desperdicio`;
+    document.getElementById('r1-note').textContent =
+      `Área neta: ${fmt(m2)} m² (${piezasBase} piezas). Con ${waste}% de desperdicio se agregan ${extra} piezas adicionales para un total de ${piezas} piezas.`;
+
+    res.style.display = 'block';
+  }
+
+  function calcDims() {
+    const l = parseFloat(document.getElementById('largo-input').value);
+    const a = parseFloat(document.getElementById('ancho-input').value);
+    const waste = parseInt(document.getElementById('waste2-range').value) || 0;
+    const res = document.getElementById('res-dims');
+    if (!l || !a || l <= 0 || a <= 0) { res.style.display = 'none'; return; }
+
+    const neta = l * a;
+    const total = neta * (1 + waste / 100);
+    const piezasBase = Math.ceil(neta * PIEZAS_M2);
+    const piezas = Math.ceil(total * PIEZAS_M2);
+    const extra = piezas - piezasBase;
+
+    document.getElementById('r2-piezas').textContent = piezas.toLocaleString('es-CR');
+    document.getElementById('r2-sub').textContent = `${l.toFixed(2)} m × ${a.toFixed(2)} m`;
+    document.getElementById('r2-area-desp').textContent = fmt(total) + ' m²';
+    document.getElementById('r2-area-neta').textContent = fmt(neta);
+    document.getElementById('r2-piezas-base').textContent = piezasBase.toLocaleString('es-CR');
+    document.getElementById('r2-note').textContent =
+      `Área ${fmt(l)} m × ${fmt(a)} m = ${fmt(neta)} m² (${piezasBase} piezas). Con ${waste}% de desperdicio se agregan ${extra} piezas para un total de ${piezas} piezas.`;
+
+    res.style.display = 'block';
+  }
+
+  // Inicializar sliders
+  document.querySelectorAll('input[type="range"]').forEach(el => {
+    const pct = (parseInt(el.value) / 30 * 100).toFixed(2) + '%';
+    el.style.setProperty('--pct', pct);
+  });
+</script>
+
+</body>
+</html>
