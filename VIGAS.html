@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orden de trabajo para corte de vigas - EL LAGAR</title>
+<style>
+  :root{
+    --lagar-red:#e2231a;
+    --lagar-dark:#1c1c1c;
+    --ink:#222;
+    --line:#ccc;
+    --bg-soft:#f4f4f2;
+  }
+  *{box-sizing:border-box;}
+  body{
+    font-family: Arial, Helvetica, sans-serif;
+    color:var(--ink);
+    background:var(--bg-soft);
+    margin:0;
+    padding:24px 16px 60px;
+  }
+  .wrap{max-width:900px;margin:0 auto;}
+  .app-header{
+    display:flex;align-items:center;gap:14px;margin-bottom:22px;
+  }
+  .logo-badge{
+    background:var(--lagar-red);color:#fff;font-weight:700;
+    padding:10px 16px;border-radius:6px;font-size:20px;letter-spacing:.5px;
+  }
+  .logo-badge span{font-weight:400;font-size:13px;display:block;opacity:.9;}
+  h1{font-size:19px;margin:0;color:var(--lagar-dark);}
+  .sub{font-size:13px;color:#666;margin:2px 0 0;}
+
+  .card{
+    background:#fff;border:1px solid var(--line);border-radius:8px;
+    padding:18px 20px;margin-bottom:18px;
+  }
+  .card h2{font-size:15px;margin:0 0 14px;color:var(--lagar-dark);border-bottom:2px solid var(--lagar-red);padding-bottom:6px;}
+
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px 16px;}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px 16px;}
+  label{display:block;font-size:12px;color:#555;margin-bottom:4px;font-weight:600;}
+  input[type=text], input[type=date], input[type=time], select{
+    width:100%;padding:8px 9px;border:1px solid #bbb;border-radius:5px;
+    font-size:14px;font-family:inherit;background:#fff;
+  }
+  input:focus, select:focus{outline:2px solid var(--lagar-red);outline-offset:1px;border-color:var(--lagar-red);}
+  .field{margin-bottom:10px;}
+
+  .item-block{
+    border:1px solid var(--line);border-radius:7px;padding:14px 16px;margin-bottom:14px;background:#fafafa;
+  }
+  .item-block-head{
+    display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;
+  }
+  .item-title{font-weight:700;color:var(--lagar-dark);font-size:14px;}
+  .btn{
+    border:1px solid #999;background:#fff;border-radius:5px;padding:7px 13px;
+    font-size:13px;cursor:pointer;font-weight:600;color:#333;
+  }
+  .btn:hover{background:#eee;}
+  .btn-danger{border-color:var(--lagar-red);color:var(--lagar-red);}
+  .btn-danger:hover{background:#fdeceb;}
+  .btn-primary{background:var(--lagar-red);border-color:var(--lagar-red);color:#fff;}
+  .btn-primary:hover{background:#c31d15;}
+  .btn-small{padding:5px 10px;font-size:12px;}
+
+  .cortes-table{width:100%;border-collapse:collapse;margin-top:6px;}
+  .cortes-table th{font-size:11px;text-align:left;color:#666;padding:4px 6px;font-weight:600;}
+  .cortes-table td{padding:4px 6px;}
+  .cortes-table input{padding:6px 8px;font-size:13px;}
+  .col-medida{width:45%;}
+  .col-cant{width:22%;}
+  .col-nota{width:25%;}
+  .col-del{width:8%;text-align:center;}
+  .icon-del{
+    cursor:pointer;color:var(--lagar-red);border:none;background:none;font-size:16px;font-weight:700;
+    line-height:1;padding:4px;
+  }
+
+  .actions-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px;}
+  .footer-actions{
+    display:flex;gap:10px;justify-content:center;margin:26px 0;flex-wrap:wrap;
+  }
+  .footer-actions .btn{padding:11px 22px;font-size:14px;}
+
+  /* ---- Documento generado (vista impresion) ---- */
+  #preview{display:none;}
+  .doc{
+    background:#fff;border:1px solid var(--line);border-radius:8px;
+    padding:30px 34px;max-width:820px;margin:0 auto 18px;
+  }
+  .doc-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+  .doc-title{text-align:center;font-size:16px;font-weight:700;letter-spacing:.3px;margin:14px 0 18px;text-transform:uppercase;}
+  .doc-meta{font-size:13px;line-height:1.9;margin-bottom:10px;}
+  .doc-meta b{display:inline-block;min-width:150px;}
+  .doc-item{border:1px solid #999;border-radius:4px;margin-bottom:14px;overflow:hidden;}
+  .doc-item-head{
+    background:var(--lagar-dark);color:#fff;font-size:12.5px;font-weight:700;
+    padding:6px 10px;display:flex;justify-content:space-between;
+  }
+  .doc-item-sub{font-size:12.5px;padding:7px 10px 2px;color:#333;}
+  table.doc-table{width:100%;border-collapse:collapse;margin-top:4px;}
+  table.doc-table th{
+    font-size:11px;text-transform:uppercase;letter-spacing:.3px;color:#555;
+    text-align:left;border-top:1px solid #ddd;border-bottom:1px solid #999;padding:5px 10px;background:#f2f2f0;
+  }
+  table.doc-table td{font-size:13px;padding:6px 10px;border-bottom:1px solid #eee;}
+  .doc-sign{display:flex;justify-content:space-between;margin-top:44px;gap:40px;}
+  .doc-sign div{flex:1;text-align:center;font-size:12.5px;}
+  .doc-sign .line{border-top:1px solid #333;margin-top:40px;padding-top:6px;}
+
+  @media (max-width:640px){
+    .grid2,.grid3{grid-template-columns:1fr;}
+    .doc{padding:20px 16px;}
+  }
+
+  @media print{
+    body{background:#fff;padding:0;}
+    .app-header, .card, .footer-actions, .no-print{display:none !important;}
+    #preview{display:block !important;}
+    .doc{border:none;padding:0;max-width:100%;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="app-header">
+    <div class="logo-badge">EL LAGAR<span>.com</span></div>
+    <div>
+      <h1>Orden de trabajo para corte de vigas</h1>
+      <p class="sub">Complete los datos y genere el documento para firma del cliente</p>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>Datos generales</h2>
+    <div class="grid3">
+      <div class="field">
+        <label>Fecha</label>
+        <input type="date" id="fecha">
+      </div>
+      <div class="field">
+        <label>No. Factura</label>
+        <input type="text" id="factura" placeholder="0000000">
+      </div>
+      <div class="field">
+        <label>Hora recibido</label>
+        <input type="time" id="hora">
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="field">
+        <label>Nombre del cliente</label>
+        <input type="text" id="cliente" placeholder="Nombre completo">
+      </div>
+      <div class="field">
+        <label>Nombre del vendedor</label>
+        <input type="text" id="vendedor" placeholder="Nombre completo">
+      </div>
+    </div>
+  </div>
+
+  <div id="items-container"></div>
+
+  <div class="no-print" style="text-align:center;margin-bottom:20px;">
+    <button class="btn" id="add-item-btn">+ Agregar viga</button>
+  </div>
+
+  <div class="footer-actions no-print">
+    <button class="btn btn-primary" id="generate-btn">Generar orden</button>
+  </div>
+
+  <div id="preview">
+    <div class="doc" id="doc-content"></div>
+    <div class="footer-actions no-print">
+      <button class="btn" id="edit-btn">Volver a editar</button>
+      <button class="btn btn-primary" id="print-btn">Imprimir / Guardar como PDF</button>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const TIPOS_VIGA = ["2x2","2x3","2x4","2x6","2x8","2x10","2x12","4x4","6x6","Viga de acero","Viga IPN","Cercha de madera","Otro"];
+let itemCount = 0;
+let corteCount = 0;
+
+function addItem(){
+  itemCount++;
+  const id = itemCount;
+  const container = document.getElementById('items-container');
+  const div = document.createElement('div');
+  div.className = 'item-block';
+  div.id = 'item-' + id;
+
+  const opciones = TIPOS_VIGA.map(t => `<option value="${t}">${t}</option>`).join('');
+
+  div.innerHTML = `
+    <div class="item-block-head">
+      <span class="item-title">Viga ${id}</span>
+      <button class="btn btn-danger btn-small no-print" onclick="removeItem(${id})">Eliminar</button>
+    </div>
+    <div class="grid3">
+      <div class="field">
+        <label>Tipo de viga</label>
+        <select class="tipo-viga" onchange="toggleOtro(this, ${id})">${opciones}</select>
+      </div>
+      <div class="field otro-field" id="otro-field-${id}" style="display:none;">
+        <label>Especifique tipo</label>
+        <input type="text" class="tipo-viga-otro" placeholder="Ej: viga laminada 6x8">
+      </div>
+      <div class="field">
+        <label>Nota general (opcional)</label>
+        <input type="text" class="nota-general" placeholder="Ej: uso exterior, tratada">
+      </div>
+    </div>
+    <table class="cortes-table">
+      <thead>
+        <tr>
+          <th class="col-medida">Medida del corte</th>
+          <th class="col-cant">Cantidad</th>
+          <th class="col-nota">Nota del corte</th>
+          <th class="col-del"></th>
+        </tr>
+      </thead>
+      <tbody class="cortes-body" id="cortes-${id}"></tbody>
+    </table>
+    <div class="actions-row no-print">
+      <button class="btn btn-small" onclick="addCorte(${id})">+ Agregar medida</button>
+    </div>
+  `;
+  container.appendChild(div);
+  addCorte(id);
+}
+
+function toggleOtro(select, itemId){
+  const field = document.getElementById('otro-field-' + itemId);
+  field.style.display = select.value === 'Otro' ? 'block' : 'none';
+}
+
+function addCorte(itemId){
+  corteCount++;
+  const cid = corteCount;
+  const tbody = document.getElementById('cortes-' + itemId);
+  const tr = document.createElement('tr');
+  tr.id = 'corte-' + cid;
+  tr.innerHTML = `
+    <td class="col-medida"><input type="text" class="c-medida" placeholder="Ej: 3.05 m"></td>
+    <td class="col-cant"><input type="text" class="c-cantidad" placeholder="Ej: 4"></td>
+    <td class="col-nota"><input type="text" class="c-nota" placeholder="Opcional"></td>
+    <td class="col-del no-print"><button class="icon-del" onclick="removeCorte(${cid})" title="Eliminar medida">&times;</button></td>
+  `;
+  tbody.appendChild(tr);
+}
+
+function removeCorte(cid){
+  const row = document.getElementById('corte-' + cid);
+  const tbody = row.parentElement;
+  if(tbody.children.length > 1){
+    row.remove();
+  }
+}
+
+function removeItem(id){
+  const el = document.getElementById('item-' + id);
+  if(el) el.remove();
+}
+
+document.getElementById('add-item-btn').addEventListener('click', addItem);
+addItem();
+
+function escapeHtml(str){
+  const d = document.createElement('div');
+  d.textContent = str || '';
+  return d.innerHTML;
+}
+
+function formatFecha(iso){
+  if(!iso) return '____ / ____ / 20____';
+  const [y,m,d] = iso.split('-');
+  return `${d} / ${m} / ${y.slice(2)}`;
+}
+
+document.getElementById('generate-btn').addEventListener('click', () => {
+  const fecha = formatFecha(document.getElementById('fecha').value);
+  const factura = document.getElementById('factura').value || '________________';
+  const hora = document.getElementById('hora').value || '________';
+  const cliente = document.getElementById('cliente').value || '________________________________';
+  const vendedor = document.getElementById('vendedor').value || '________________________________';
+
+  const blocks = document.querySelectorAll('.item-block');
+  let itemsHtml = '';
+  let n = 0;
+
+  blocks.forEach(block => {
+    n++;
+    const tipoSelect = block.querySelector('.tipo-viga');
+    let tipo = tipoSelect.value;
+    if(tipo === 'Otro'){
+      const otro = block.querySelector('.tipo-viga-otro').value;
+      tipo = otro || 'Otro';
+    }
+    const notaGeneral = block.querySelector('.nota-general').value;
+
+    const rows = block.querySelectorAll('.cortes-body tr');
+    let rowsHtml = '';
+    let totalPiezas = 0;
+    rows.forEach(r => {
+      const medida = r.querySelector('.c-medida').value;
+      const cantidad = r.querySelector('.c-cantidad').value;
+      const nota = r.querySelector('.c-nota').value;
+      if(!medida && !cantidad) return;
+      const cantNum = parseFloat(cantidad);
+      if(!isNaN(cantNum)) totalPiezas += cantNum;
+      rowsHtml += `<tr>
+        <td>${escapeHtml(medida) || '-'}</td>
+        <td>${escapeHtml(cantidad) || '-'}</td>
+        <td>${escapeHtml(nota)}</td>
+      </tr>`;
+    });
+    if(!rowsHtml) rowsHtml = `<tr><td colspan="3" style="color:#999;">Sin medidas registradas</td></tr>`;
+
+    itemsHtml += `
+      <div class="doc-item">
+        <div class="doc-item-head">
+          <span>ITEM ${n}</span>
+          <span>${escapeHtml(tipo)}${totalPiezas ? ' &middot; ' + totalPiezas + ' pieza(s)' : ''}</span>
+        </div>
+        ${notaGeneral ? `<div class="doc-item-sub">Nota: ${escapeHtml(notaGeneral)}</div>` : ''}
+        <table class="doc-table">
+          <thead>
+            <tr><th>Medida</th><th>Cantidad</th><th>Nota</th></tr>
+          </thead>
+          <tbody>${rowsHtml}</tbody>
+        </table>
+      </div>
+    `;
+  });
+
+  if(!itemsHtml){
+    itemsHtml = '<p style="color:#999;">No se agregaron vigas.</p>';
+  }
+
+  const docHtml = `
+    <div class="doc-header">
+      <div class="logo-badge">EL LAGAR<span>.com</span></div>
+      <div style="text-align:right;font-size:13px;">Fecha: <b>${fecha}</b></div>
+    </div>
+    <div class="doc-title">Orden de trabajo para corte de vigas</div>
+    <div class="doc-meta">
+      <div><b>No. Factura:</b> ${escapeHtml(factura)}&nbsp;&nbsp;&nbsp;&nbsp;<b>Hora recibido:</b> ${escapeHtml(hora)}</div>
+      <div><b>Nombre del cliente:</b> ${escapeHtml(cliente)}</div>
+      <div><b>Nombre del vendedor:</b> ${escapeHtml(vendedor)}</div>
+    </div>
+    ${itemsHtml}
+    <div class="doc-sign">
+      <div class="line">Firma del cliente</div>
+      <div class="line">Firma del vendedor</div>
+    </div>
+  `;
+
+  document.getElementById('doc-content').innerHTML = docHtml;
+  document.getElementById('preview').style.display = 'block';
+  document.querySelectorAll('.card, #items-container, .no-print#add-item-btn').forEach(()=>{});
+  document.querySelector('.app-header').style.display = 'none';
+  document.querySelectorAll('.card').forEach(c => c.style.display = 'none');
+  document.getElementById('items-container').style.display = 'none';
+  document.querySelectorAll('.footer-actions')[0].style.display = 'none';
+  document.getElementById('add-item-btn').parentElement.style.display = 'none';
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+
+document.getElementById('edit-btn').addEventListener('click', () => {
+  document.getElementById('preview').style.display = 'none';
+  document.querySelector('.app-header').style.display = 'flex';
+  document.querySelectorAll('.card').forEach(c => c.style.display = 'block');
+  document.getElementById('items-container').style.display = 'block';
+  document.querySelectorAll('.footer-actions')[0].style.display = 'flex';
+  document.getElementById('add-item-btn').parentElement.style.display = 'block';
+});
+
+document.getElementById('print-btn').addEventListener('click', () => {
+  window.print();
+});
+</script>
+</body>
+</html>
